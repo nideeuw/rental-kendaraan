@@ -1,91 +1,91 @@
 <?php
 class PelangganController
 {
-    private $model;
+  private $model;
 
-    public function __construct($model)
-    {
-        $this->model = $model;
-    }
-
-
-    public function list(): void
-    {
-        $pelanggan = $this->model->getAllPelanggan();
-        include 'views/pelanggan/pelanggan_list.php';
-    }
+  public function __construct($model)
+  {
+    $this->model = $model;
+  }
 
 
-    public function create(): void
-    {
-        if ($_POST) {
-
-            $data = [
-                'nama_pelanggan' => $_POST['nama_pelanggan'],
-                'alamat'         => $_POST['alamat'],
-                'no_hp'          => $_POST['no_hp'],
-                'email'          => $_POST['email']
-            ];
-
-            if ($this->model->createPelanggan($data)) {
-                header("Location: index.php?action=pelanggan_list&message=created");
-                exit();
-            } else {
-                $error = "Gagal menambah data pelanggan";
-            }
-        }
-
-        include 'views/pelanggan/pelanggan_form.php';
-    }
+  public function list(): void
+  {
+    $pelanggan = $this->model->getAllPelanggan();
+    include 'views/pelanggan/pelanggan_list.php';
+  }
 
 
-    public function edit(): void
-    {
-        $id = $_GET['id'];
-        $pelanggan = $this->model->getPelangganById($id);
+  public function create(): void
+  {
+    if ($_POST) {
 
-        if ($_POST) {
-
-            $data = [
-                'nama_pelanggan' => $_POST['nama_pelanggan'],
-                'alamat'         => $_POST['alamat'],
-                'no_hp'          => $_POST['no_hp'],
-                'email'          => $_POST['email']
-            ];
-
-            if ($this->model->updatePelanggan($id, $data)) {
-                header("Location: index.php?action=pelanggan_list&message=updated");
-                exit();
-            } else {
-                $error = "Gagal mengupdate data pelanggan";
-            }
-        }
-
-        include 'views/pelanggan/pelanggan_form.php';
-    }
+      $data = [
+        'nama_pelanggan' => $_POST['nama_pelanggan'],
+        'alamat'         => $_POST['alamat'],
+        'no_telepon'     => $_POST['no_telepon'],
+        'email'          => $_POST['email']
+      ];
 
 
-    public function delete(): void
-    {
-        $id = $_GET['id'];
-
-        if ($this->model->deletePelanggan($id)) {
-            header("Location: index.php?action=pelanggan_list&message=deleted");
-        } else {
-            header("Location: index.php?action=pelanggan_list&message=delete_error");
-        }
+      if ($this->model->createPelanggan($data)) {
+        header("Location: index.php?action=pelanggan_list&message=created");
         exit();
+      } else {
+        $error = "Gagal menambah data pelanggan";
+      }
     }
 
+    include 'views/pelanggan/pelanggan_form.php';
+  }
 
-    public function search(): void
-    {
-        if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
-            $pelanggan = $this->model->searchPelanggan($_GET['keyword']);
-        } else {
-            $pelanggan = $this->model->getAllPelanggan();
-        }
+  public function edit(): void
+  {
+    $id = $_GET['id'];
+    $pelanggan = $this->model->getPelangganById($id);
 
-        include 'views/pelanggan/pelanggan_list.php';
+    if ($_POST) {
+
+      $data = [
+        'nama_pelanggan' => $_POST['nama_pelanggan'],
+        'alamat'         => $_POST['alamat'],
+        'no_telepon'     => $_POST['no_telepon'], // FIXED
+        'email'          => $_POST['email']
+      ];
+
+      if ($this->model->updatePelanggan($id, $data)) {
+        header("Location: index.php?action=pelanggan_list&message=updated");
+        exit();
+      } else {
+        $error = "Gagal mengupdate data pelanggan";
+      }
     }
+
+    include 'views/pelanggan/pelanggan_form.php';
+  }
+
+
+  public function delete(): void
+  {
+    $id = $_GET['id'];
+
+    if ($this->model->deletePelanggan($id)) {
+      header("Location: index.php?action=pelanggan_list&message=deleted");
+    } else {
+      header("Location: index.php?action=pelanggan_list&message=delete_error");
+    }
+    exit();
+  }
+
+
+  public function search(): void
+  {
+    if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
+      $pelanggan = $this->model->searchPelanggan($_GET['keyword']);
+    } else {
+      $pelanggan = $this->model->getAllPelanggan();
+    }
+
+    include 'views/pelanggan/pelanggan_list.php';
+  }
 }

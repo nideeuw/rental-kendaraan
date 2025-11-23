@@ -6,6 +6,8 @@ require_once 'models/KendaraanModel.php';
 require_once 'controllers/KendaraanController.php';
 require_once 'models/SopirModel.php';
 require_once 'controllers/SopirController.php';
+require_once 'models/PelangganModel.php';
+require_once 'controllers/PelangganController.php';
 require_once 'models/RentalModel.php';
 require_once 'controllers/RentalController.php';
 require_once 'models/pengembalianModel.php';
@@ -25,6 +27,9 @@ $KendaraanController = new KendaraanController($kendaraanModel);
 //Tabel Sopir
 $sopirModel = new SopirModel($db);
 $sopirController = new SopirController($sopirModel);
+//Tabel Pelanggan
+$pelangganModel = new PelangganModel($db);
+$pelangganController = new PelangganController($pelangganModel);
 //Tabel Rental
 $rentalModel = new RentalModel($db);
 $rentalController = new RentalController($rentalModel);
@@ -84,21 +89,39 @@ switch ($action) {
     $sopirController->search();
     break;
 
-  case 'rental_list':
-    $rentalController->list();
-    break;
-  case 'rental_create':
-    $rentalController->create();
-    break;
-  case 'rental_edit':
-    $rentalController->edit();
-    break;
-  case 'rental_delete':
-    $rentalController->delete();
-    break;
-  case 'rental_search':
-    $rentalController->search();
-    break;
+
+    case 'pelanggan_list':
+        $pelangganController->list();
+        break;
+    case 'pelanggan_create':
+        $pelangganController->create();
+        break;
+    case 'pelanggan_edit':
+        $pelangganController->edit();
+        break;
+    case 'pelanggan_delete':
+        $pelangganController->delete();
+        break;
+    case 'pelanggan_search':
+        $pelangganController->search();
+        break;
+
+    case 'rental_list':
+        $rentalController->list();
+        break;
+    case 'rental_create':
+        $rentalController->create();
+        break;
+    case 'rental_edit':
+        $rentalController->edit();
+        break;
+    case 'rental_delete':
+        $rentalController->delete();
+        break;
+    case 'rental_search':
+        $rentalController->search();
+        break;
+
 
   case 'pengembalian_list':
     $pengembalianController->list();
