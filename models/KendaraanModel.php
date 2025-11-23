@@ -6,9 +6,8 @@ class KendaraanModel {
     public function __construct($db) {
         $this->conn = $db;
     }
-    // ======================================================
+
     // GET TIPE KENDARAAN (UNTUK DROPDOWN)
-    // ======================================================
     public function getAllTipe() {
         $query = "SELECT id_tipe, nama_tipe FROM tipe_kendaraan ORDER BY nama_tipe";
         $stmt = $this->conn->prepare($query);
@@ -16,9 +15,8 @@ class KendaraanModel {
         return $stmt;
     }
 
-    // ======================================================
+
     // GET ALL DATA
-    // ======================================================
     public function getAllKendaraan() {
         $query = "SELECT 
                     k.id_kendaraan,
@@ -39,9 +37,7 @@ class KendaraanModel {
         return $stmt;
     }
 
-    // ======================================================
     // CREATE DATA
-    // ======================================================
     public function createKendaraan($data) {
         $query = "INSERT INTO " . $this->table_name . "
                   (plat_nomor, merk, warna, status, kapasitas, tarif_harian, id_tipe)
@@ -59,9 +55,7 @@ class KendaraanModel {
         return $stmt->execute();
     }
 
-    // ======================================================
     // UPDATE DATA
-    // ======================================================
     public function updateKendaraan($id, $data) {
         $query = "UPDATE " . $this->table_name . "
                   SET plat_nomor = :plat_nomor,
@@ -85,9 +79,7 @@ class KendaraanModel {
         return $stmt->execute();
     }
 
-    // ======================================================
     // DELETE DATA
-    // ======================================================
     public function deleteKendaraan($id) {
         $query = "DELETE FROM " . $this->table_name . " WHERE id_kendaraan = :id";
         $stmt = $this->conn->prepare($query);
@@ -95,9 +87,7 @@ class KendaraanModel {
         return $stmt->execute();
     }
 
-    // ======================================================
     // GET SINGLE RECORD
-    // ======================================================
     public function getKendaraanById($id) {
         $query = "SELECT * FROM " . $this->table_name . " WHERE id_kendaraan = :id";
         $stmt = $this->conn->prepare($query);
@@ -106,9 +96,7 @@ class KendaraanModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // ======================================================
     // SEARCH
-    // ======================================================
     public function searchKendaraan($keyword) {
         $query = "SELECT 
                     k.id_kendaraan,

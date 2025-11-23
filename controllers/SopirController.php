@@ -8,18 +8,12 @@ class SopirController
         $this->model = $model;
     }
 
-    // =====================================================
-    // LIST DATA
-    // =====================================================
     public function list(): void
     {
         $sopir = $this->model->getAllSopir();
         include 'views/sopir/sopir_list.php';
     }
 
-    // =====================================================
-    // CREATE DATA
-    // =====================================================
     public function create(): void
     {
         if ($_POST) {
@@ -43,9 +37,6 @@ class SopirController
         include 'views/sopir/sopir_form.php';
     }
 
-    // =====================================================
-    // EDIT DATA
-    // =====================================================
     public function edit(): void
     {
         $id = $_GET['id'];
@@ -72,9 +63,6 @@ class SopirController
         include 'views/sopir/sopir_form.php';
     }
 
-    // =====================================================
-    // DELETE DATA
-    // =====================================================
     public function delete(): void
     {
         $id = $_GET['id'];
@@ -87,9 +75,6 @@ class SopirController
         exit();
     }
 
-    // =====================================================
-    // SEARCH DATA
-    // =====================================================
     public function search(): void
     {
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {

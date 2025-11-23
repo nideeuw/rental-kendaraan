@@ -10,9 +10,7 @@ class SopirModel
     }
 
 
-    // ======================================================
     // GET ALL DATA
-    // ======================================================
     public function getAllSopir()
     {
         $query = "SELECT 
@@ -28,9 +26,7 @@ class SopirModel
         return $stmt;
     }
 
-    // ======================================================
     // CREATE DATA
-    // ======================================================
     public function createSopir($data)
     {
         $query = "INSERT INTO " . $this->table_name . "
@@ -46,9 +42,7 @@ class SopirModel
         return $stmt->execute();
     }
 
-    // ======================================================
     // UPDATE DATA
-    // ======================================================
     public function updateSopir($id, $data)
     {
         $query = "UPDATE " . $this->table_name . "
@@ -67,9 +61,7 @@ class SopirModel
         return $stmt->execute();
     }
 
-    // ======================================================
     // DELETE DATA
-    // ======================================================
     public function deleteSopir($id)
     {
         $query = "DELETE FROM " . $this->table_name . " WHERE id_sopir = :id";
@@ -78,9 +70,7 @@ class SopirModel
         return $stmt->execute();
     }
 
-    // ======================================================
     // GET SINGLE RECORD
-    // ======================================================
     public function getSopirById($id)
     {
         $query = "SELECT * FROM " . $this->table_name . " WHERE id_sopir = :id";
@@ -90,9 +80,7 @@ class SopirModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // ======================================================
     // SEARCH
-    // ======================================================
     public function searchSopir($keyword)
     {
 

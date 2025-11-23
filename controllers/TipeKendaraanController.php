@@ -3,26 +3,17 @@ class TipeKendaraanController
 {
     private $model;
 
-    // ==========
-    // CONSTRUCTOR
-    // ==========
     public function __construct($model)
     {
         $this->model = $model;
     }
 
-    // ============================
-    // LIST DATA
-    // ============================
     public function list(): void
     {
         $tipe = $this->model->getAllTipe();
         include 'views/tipe_kendaraan/tipe_kendaraan_list.php';
     }
 
-    // ============================
-    // CREATE DATA
-    // ============================
     public function create(): void
     {
         if ($_POST) {
@@ -43,9 +34,6 @@ class TipeKendaraanController
         include 'views/tipe_kendaraan/tipe_kendaraan_form.php';
     }
 
-    // ============================
-    // EDIT DATA
-    // ============================
     public function edit(): void
     {
         $id = $_GET['id'];
@@ -68,9 +56,6 @@ class TipeKendaraanController
         include 'views/tipe_kendaraan/tipe_kendaraan_form.php';
     }
 
-    // ============================
-    // DELETE DATA
-    // ============================
     public function delete(): void
     {
         $id = $_GET['id'];
@@ -83,9 +68,6 @@ class TipeKendaraanController
         exit();
     }
 
-    // ============================
-    // SEARCH DATA
-    // ============================
     public function search(): void
     {
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {

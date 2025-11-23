@@ -8,20 +8,29 @@ require_once 'models/SopirModel.php';
 require_once 'controllers/SopirController.php';
 require_once 'models/RentalModel.php';
 require_once 'controllers/RentalController.php';
+require_once 'models/pengembalianModel.php';
+require_once 'controllers/PengembalianController.php';
 
 
 
 // db
 $database = new Database();
 $db = $database->getConnection();
+//Tabel Tipe Kendaraan
 $tipeKendaraanModel = new TipeKendaraanModel($db);
 $TipeKendaraanController = new TipeKendaraanController($tipeKendaraanModel);
+//Tabel Kendaraan
 $kendaraanModel = new KendaraanModel($db);
 $KendaraanController = new KendaraanController($kendaraanModel);
+//Tabel Sopir
 $sopirModel = new SopirModel($db);
 $sopirController = new SopirController($sopirModel);
+//Tabel Rental
 $rentalModel = new RentalModel($db);
 $rentalController = new RentalController($rentalModel);
+//Tabel Pengembalian
+$pengambalianModel = new pengembalianModel($db);
+$pengembalianController = new PengembalianController($pengambalianModel);
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'tipe_kendaraan_list';
 
@@ -89,6 +98,22 @@ switch ($action) {
         break;
     case 'rental_search':
         $rentalController->search();
+        break;
+
+    case 'pengembalian_list':
+        $pengembalianController->list();
+        break;
+    case 'pengembalian_create':
+        $pengembalianController->create();
+        break;
+    case 'pengembalian_edit':
+        $pengembalianController->edit();
+        break;
+    case 'pengembalian_delete':
+        $pengembalianController->delete();
+        break;
+    case 'pengembalian_search':
+        $pengembalianController->search();
         break;
 
 
