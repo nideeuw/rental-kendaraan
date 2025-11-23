@@ -6,7 +6,6 @@ class KendaraanModel {
     public function __construct($db) {
         $this->conn = $db;
     }
-    
     // ======================================================
     // GET TIPE KENDARAAN (UNTUK DROPDOWN)
     // ======================================================
@@ -16,6 +15,7 @@ class KendaraanModel {
         $stmt->execute();
         return $stmt;
     }
+
     // ======================================================
     // GET ALL DATA
     // ======================================================

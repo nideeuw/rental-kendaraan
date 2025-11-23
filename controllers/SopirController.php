@@ -39,7 +39,7 @@ class SopirController
             }
         }
 
-        $tipe_list = $this->model->getAllTipe();
+        $tipe_list = $this->model->getAllSopir();
         include 'views/sopir/sopir_form.php';
     }
 

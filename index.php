@@ -6,6 +6,10 @@ require_once 'models/KendaraanModel.php';
 require_once 'controllers/KendaraanController.php';
 require_once 'models/SopirModel.php';
 require_once 'controllers/SopirController.php';
+require_once 'models/RentalModel.php';
+require_once 'controllers/RentalController.php';
+
+
 
 // db
 $database = new Database();
@@ -15,7 +19,9 @@ $TipeKendaraanController = new TipeKendaraanController($tipeKendaraanModel);
 $kendaraanModel = new KendaraanModel($db);
 $KendaraanController = new KendaraanController($kendaraanModel);
 $sopirModel = new SopirModel($db);
-$sopirnController = new SopirController($sopirModel);
+$sopirController = new SopirController($sopirModel);
+$rentalModel = new RentalModel($db);
+$rentalController = new RentalController($rentalModel);
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'tipe_kendaraan_list';
 
@@ -54,19 +60,35 @@ switch ($action) {
         break;
 
     case 'sopir_list':
-        $sopirnController->list();
+        $sopirController->list();
         break;
     case 'sopir_create':
-        $sopirnController->create();
+        $sopirController->create();
         break;
     case 'sopir_edit':
-        $sopirnController->edit();
+        $sopirController->edit();
         break;
     case 'sopir_delete':
-        $sopirnController->delete();
+        $sopirController->delete();
         break;
     case 'sopir_search':
-        $sopirnController->search();
+        $sopirController->search();
+        break;
+
+    case 'rental_list':
+        $rentalController->list();
+        break;
+    case 'rental_create':
+        $rentalController->create();
+        break;
+    case 'rental_edit':
+        $rentalController->edit();
+        break;
+    case 'rental_delete':
+        $rentalController->delete();
+        break;
+    case 'rental_search':
+        $rentalController->search();
         break;
 
 

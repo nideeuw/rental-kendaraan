@@ -9,14 +9,6 @@ class SopirModel
         $this->conn = $db;
     }
 
-    // Ambil semua data
-    public function getAllTipe()
-    {
-        $query = "SELECT id_sopir, nama_sopir, no_sim, tarif_harian, status_sopir  FROM " . $this->table_name . " ORDER BY nama_sopir ASC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt;
-    }
 
     // ======================================================
     // GET ALL DATA
