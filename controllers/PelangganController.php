@@ -49,7 +49,7 @@ class PelangganController
       $data = [
         'nama_pelanggan' => $_POST['nama_pelanggan'],
         'alamat'         => $_POST['alamat'],
-        'no_telepon'     => $_POST['no_telepon'], // FIXED
+        'no_telepon'     => $_POST['no_telepon'], 
         'email'          => $_POST['email']
       ];
 
