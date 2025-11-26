@@ -139,7 +139,11 @@ switch ($action) {
     $pengembalianController->search();
     break;
 
-
+case 'pelanggan_total_denda':
+    $controller = new PelangganController($pelangganModel);
+    $controller->totalDenda();
+    break;
+    
   default:
     $TipeKendaraanController->list();
     break;

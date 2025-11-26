@@ -88,4 +88,21 @@ class PelangganController
 
     include 'views/pelanggan/pelanggan_list.php';
   }
+
+  // FUNCTION: Total Denda Pelanggan
+  public function totalDenda(): void
+  {
+      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+          $id = $_POST['id_pelanggan'];
+
+          // Ambil hasil dari function PostgreSQL
+          $result = $this->model->getTotalDenda($id);
+
+          include 'views/pelanggan/total_denda_result.php';
+      } else {
+          include 'views/pelanggan/total_denda.php';
+      }
+  }
+
 }

@@ -36,6 +36,12 @@
                         'url' => 'action=pelanggan_list',
                         'label' => 'Data Pelanggan'
                     ],
+
+                    [
+                        'url' => 'action=pelanggan_total_denda',
+                        'label' => 'Cek Total Denda'
+                    ],
+
                     [
                         'url' => 'action=rental_list',
                         'label' => 'Data Rental'
@@ -54,7 +60,6 @@
         </aside>
 
         <div class="main-wrapper">
-
             <!-- TOP NAVBAR -->
             <header class="top-navbar">
                 <h1 class="page-title">

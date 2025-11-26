@@ -103,4 +103,16 @@ class PelangganModel
         $stmt->execute();
         return $stmt;
     }
+     // FUNCTION: Total Denda via PostgreSQL Function
+    public function getTotalDenda($id_pelanggan)
+    {
+        $query = "SELECT total_denda_pelanggan(:id_pelanggan) AS total_denda;";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id_pelanggan", $id_pelanggan);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
+
+    
+
