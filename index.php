@@ -90,37 +90,37 @@ switch ($action) {
     break;
 
 
-    case 'pelanggan_list':
-        $pelangganController->list();
-        break;
-    case 'pelanggan_create':
-        $pelangganController->create();
-        break;
-    case 'pelanggan_edit':
-        $pelangganController->edit();
-        break;
-    case 'pelanggan_delete':
-        $pelangganController->delete();
-        break;
-    case 'pelanggan_search':
-        $pelangganController->search();
-        break;
+  case 'pelanggan_list':
+    $pelangganController->list();
+    break;
+  case 'pelanggan_create':
+    $pelangganController->create();
+    break;
+  case 'pelanggan_edit':
+    $pelangganController->edit();
+    break;
+  case 'pelanggan_delete':
+    $pelangganController->delete();
+    break;
+  case 'pelanggan_search':
+    $pelangganController->search();
+    break;
 
-    case 'rental_list':
-        $rentalController->list();
-        break;
-    case 'rental_create':
-        $rentalController->create();
-        break;
-    case 'rental_edit':
-        $rentalController->edit();
-        break;
-    case 'rental_delete':
-        $rentalController->delete();
-        break;
-    case 'rental_search':
-        $rentalController->search();
-        break;
+  case 'rental_list':
+    $rentalController->list();
+    break;
+  case 'rental_create':
+    $rentalController->create();
+    break;
+  case 'rental_edit':
+    $rentalController->edit();
+    break;
+  case 'rental_delete':
+    $rentalController->delete();
+    break;
+  case 'rental_search':
+    $rentalController->search();
+    break;
 
 
   case 'pengembalian_list':
@@ -139,11 +139,11 @@ switch ($action) {
     $pengembalianController->search();
     break;
 
-case 'pelanggan_total_denda':
+  case 'pelanggan_total_denda':
     $controller = new PelangganController($pelangganModel);
     $controller->totalDenda();
     break;
-    
+
   default:
     $TipeKendaraanController->list();
     break;
