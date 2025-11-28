@@ -149,7 +149,7 @@ switch ($action) {
     $controller->totalDenda();
     break;
 
-    
+
   case 'kendaraan_tersedia':
     $controller = new KendaraanController($kendaraanModel);
     $controller->kendaraanTersedia();
@@ -168,6 +168,9 @@ switch ($action) {
   case 'refresh_laporan':
     $controller = new LaporanTransaksiController($laporanTransaksiModel);
     $controller->refreshTransaksi();
+  case 'kendaraan_ubah_status':
+    $controller = new KendaraanController($kendaraanModel);
+    $controller->ubah_status();
     break;
 
   default:

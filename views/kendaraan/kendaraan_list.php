@@ -3,16 +3,12 @@ $page_title = "Data Kendaraan";
 include __DIR__ . '/../../includes/header.php';
 ?>
 
-<?php if (isset($_GET['message'])): ?>
-    <?php if ($_GET['message'] == 'created'): ?>
-        <div class="alert alert-success">Data kendaraan berhasil ditambahkan!</div>
-    <?php elseif ($_GET['message'] == 'updated'): ?>
-        <div class="alert alert-success">Data kendaraan berhasil diupdate!</div>
-    <?php elseif ($_GET['message'] == 'deleted'): ?>
-        <div class="alert alert-success">Data kendaraan berhasil dihapus!</div>
-    <?php elseif ($_GET['message'] == 'delete_error'): ?>
-        <div class="alert alert-error">Gagal menghapus data kendaraan!</div>
-    <?php endif; ?>
+<!-- NOTIFIKASI (SUCCESS / ERROR) -->
+<?php if (!empty($_SESSION['notif'])): ?>
+    <div class="alert alert-<?= $_SESSION['notif']['type']; ?>">
+        <?= $_SESSION['notif']['message']; ?>
+    </div>
+    <?php unset($_SESSION['notif']); ?>
 <?php endif; ?>
 
 <div class="content-box">
@@ -21,19 +17,20 @@ include __DIR__ . '/../../includes/header.php';
         <a href="index.php?action=kendaraan_create" class="btn btn-primary">Tambah Kendaraan</a>
     </div>
 
+    <!-- SEARCH BOX -->
     <div class="search-box">
         <form method="GET" action="index.php">
             <input type="hidden" name="action" value="kendaraan_search">
-            <input 
-                type="text" 
-                name="keyword" 
-                class="search-input" 
+            <input
+                type="text"
+                name="keyword"
+                class="search-input"
                 placeholder="Cari kendaraan..."
-                value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>"
-            >
+                value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
         </form>
     </div>
 
+    <!-- TABEL DATA -->
     <?php if ($kendaraan->rowCount() > 0): ?>
         <div class="table-container">
             <table class="data-table">
@@ -50,6 +47,7 @@ include __DIR__ . '/../../includes/header.php';
                         <th>Aksi</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <?php $no = 1; ?>
                     <?php while ($row = $kendaraan->fetch(PDO::FETCH_ASSOC)): ?>
@@ -62,20 +60,38 @@ include __DIR__ . '/../../includes/header.php';
                             <td><?= htmlspecialchars($row['kapasitas']); ?> orang</td>
                             <td>Rp <?= htmlspecialchars($row['tarif_harian']); ?> / hari</td>
                             <td><?= htmlspecialchars($row['nama_tipe']); ?></td>
+
                             <td>
                                 <div class="btn-group">
-                                    <a 
-                                        href="index.php?action=kendaraan_edit&id=<?= $row['id_kendaraan']; ?>" 
-                                        class="btn btn-edit"
-                                    >Edit</a>
+                                    <!-- Edit -->
+                                    <a
+                                        href="index.php?action=kendaraan_edit&id=<?= $row['id_kendaraan']; ?>"
+                                        class="btn btn-edit">Edit</a>
 
-                                    <a 
-                                        href="index.php?action=kendaraan_delete&id=<?= $row['id_kendaraan']; ?>" 
+                                    <!-- Hapus -->
+                                    <a
+                                        href="index.php?action=kendaraan_delete&id=<?= $row['id_kendaraan']; ?>"
                                         class="btn btn-delete"
-                                        onclick="return confirm('Yakin hapus data ini?')"
-                                    >Hapus</a>
+                                        onclick="return confirm('Yakin hapus data ini?')">
+                                        Hapus
+                                    </a>
+
+                                    <!-- Set Disewa -->
+                                    <a
+                                        href="index.php?action=kendaraan_ubah_status&id=<?= $row['id_kendaraan'] ?>&status=Disewa"
+                                        class="btn btn-warning btn-sm">
+                                        Set Disewa
+                                    </a>
+
+                                    <!-- Set Tersedia -->
+                                    <a
+                                        href="index.php?action=kendaraan_ubah_status&id=<?= $row['id_kendaraan'] ?>&status=Tersedia"
+                                        class="btn btn-success btn-sm">
+                                        Set Tersedia
+                                    </a>
                                 </div>
                             </td>
+
                         </tr>
                     <?php endwhile; ?>
                 </tbody>

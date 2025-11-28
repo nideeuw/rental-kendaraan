@@ -1,4 +1,5 @@
 <?php
+session_start();
 class KendaraanController
 {
     private $model;
@@ -96,5 +97,26 @@ class KendaraanController
     {
         $kendaraan = $this->model->getKendaraanTersedia();
         include 'views/kendaraan/kendaraan_tersedia.php';
+    }
+
+    public function ubah_status()
+    {
+        $id = $_GET['id'];
+        $status_baru = $_GET['status'];
+
+        if ($this->model->ubahStatusKendaraan($id, $status_baru)) {
+            $_SESSION['notif'] = [
+                "type" => "success",
+                "message" => "Status kendaraan berhasil diubah menjadi <b>$status_baru</b>!"
+            ];
+        } else {
+            $_SESSION['notif'] = [
+                "type" => "error",
+                "message" => "Gagal mengubah status kendaraan."
+            ];
+        }
+
+        header("Location: index.php?action=kendaraan_list");
+        exit();
     }
 }

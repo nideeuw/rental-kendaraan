@@ -136,4 +136,14 @@ class KendaraanModel
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    
+    public function ubahStatusKendaraan($id_kendaraan, $status_baru)
+    {
+        $query = "CALL ubah_status_kendaraan(:id_kendaraan, :status_baru)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_kendaraan', $id_kendaraan);
+        $stmt->bindParam(':status_baru', $status_baru);
+        return $stmt->execute();
+    }
 }
