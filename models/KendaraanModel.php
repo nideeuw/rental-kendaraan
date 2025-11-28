@@ -1,23 +1,26 @@
 <?php
-class KendaraanModel {
+class KendaraanModel
+{
     private $conn;
     private $table_name = "kendaraan";
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
     // GET TIPE KENDARAAN (UNTUK DROPDOWN)
-    public function getAllTipe() {
+    public function getAllTipe()
+    {
         $query = "SELECT id_tipe, nama_tipe FROM tipe_kendaraan ORDER BY nama_tipe";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
     }
 
-
-    // GET ALL DATA
-    public function getAllKendaraan() {
+    // GET ALL
+    public function getAllKendaraan()
+    {
         $query = "SELECT 
                     k.id_kendaraan,
                     k.plat_nomor,
@@ -28,22 +31,22 @@ class KendaraanModel {
                     k.kapasitas,
                     k.tarif_harian,
                     t.nama_tipe
-                  FROM " . $this->table_name . " k
+                  FROM kendaraan k
                   LEFT JOIN tipe_kendaraan t ON k.id_tipe = t.id_tipe
                   ORDER BY k.id_kendaraan DESC";
-    
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
     }
 
-    // CREATE DATA
-    public function createKendaraan($data) {
-        $query = "INSERT INTO " . $this->table_name . "
+    // CREATE
+    public function createKendaraan($data)
+    {
+        $query = "INSERT INTO kendaraan 
                   (plat_nomor, merk, warna, status, kapasitas, tarif_harian, id_tipe)
-                  VALUES 
-                  (:plat_nomor, :merk, :warna, :status, :kapasitas, :tarif_harian, :id_tipe)";
-        
+                  VALUES (:plat_nomor, :merk, :warna, :status, :kapasitas, :tarif_harian, :id_tipe)";
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":plat_nomor", $data['plat_nomor']);
         $stmt->bindParam(":merk", $data['merk']);
@@ -55,9 +58,10 @@ class KendaraanModel {
         return $stmt->execute();
     }
 
-    // UPDATE DATA
-    public function updateKendaraan($id, $data) {
-        $query = "UPDATE " . $this->table_name . "
+    // UPDATE
+    public function updateKendaraan($id, $data)
+    {
+        $query = "UPDATE kendaraan
                   SET plat_nomor = :plat_nomor,
                       merk = :merk,
                       warna = :warna,
@@ -79,17 +83,19 @@ class KendaraanModel {
         return $stmt->execute();
     }
 
-    // DELETE DATA
-    public function deleteKendaraan($id) {
-        $query = "DELETE FROM " . $this->table_name . " WHERE id_kendaraan = :id";
+    // DELETE
+    public function deleteKendaraan($id)
+    {
+        $query = "DELETE FROM kendaraan WHERE id_kendaraan = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $id);
         return $stmt->execute();
     }
 
-    // GET SINGLE RECORD
-    public function getKendaraanById($id) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE id_kendaraan = :id";
+    // GET ONE
+    public function getKendaraanById($id)
+    {
+        $query = "SELECT * FROM kendaraan WHERE id_kendaraan = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $id);
         $stmt->execute();
@@ -97,7 +103,8 @@ class KendaraanModel {
     }
 
     // SEARCH
-    public function searchKendaraan($keyword) {
+    public function searchKendaraan($keyword)
+    {
         $query = "SELECT 
                     k.id_kendaraan,
                     k.plat_nomor,
@@ -107,7 +114,7 @@ class KendaraanModel {
                     k.kapasitas,
                     k.tarif_harian,
                     t.nama_tipe
-                  FROM " . $this->table_name . " k
+                  FROM kendaraan k
                   LEFT JOIN tipe_kendaraan t ON k.id_tipe = t.id_tipe
                   WHERE k.plat_nomor ILIKE :keyword
                      OR k.merk ILIKE :keyword
@@ -121,5 +128,12 @@ class KendaraanModel {
         return $stmt;
     }
 
+    // MEMANGGIL FUNCTION DATABASE daftar_kendaraan_tersedia()
+    public function getKendaraanTersedia()
+    {
+        $query = "SELECT * FROM daftar_kendaraan_tersedia()";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
-?>

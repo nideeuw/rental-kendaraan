@@ -91,4 +91,10 @@ class KendaraanController
 
         include 'views/kendaraan/kendaraan_list.php';
     }
+
+    public function kendaraanTersedia(): void
+    {
+        $kendaraan = $this->model->getKendaraanTersedia();
+        include 'views/kendaraan/kendaraan_tersedia.php';
+    }
 }

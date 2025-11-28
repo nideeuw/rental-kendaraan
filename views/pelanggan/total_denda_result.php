@@ -1,4 +1,4 @@
-<?php 
+//<?php 
 $page_title = "Hasil Total Denda";
 include __DIR__ . '/../../includes/header.php';
 ?>

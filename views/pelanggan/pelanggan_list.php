@@ -67,7 +67,6 @@ include __DIR__ . '/../../includes/header.php';
                                         class="btn btn-delete"
                                         onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
 
-                                        <a href="index.php?action=pelanggan_total_denda" class="btn btn-info">Cek Total Denda</a>
 
                                 </div>
                             </td>

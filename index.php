@@ -144,6 +144,12 @@ switch ($action) {
     $controller->totalDenda();
     break;
 
+    
+  case 'kendaraan_tersedia':
+    $controller = new KendaraanController($kendaraanModel);
+    $controller->kendaraanTersedia();
+    break;
+
   default:
     $TipeKendaraanController->list();
     break;

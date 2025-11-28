@@ -49,6 +49,10 @@
                     [
                         'url' => 'action=pengembalian_list',
                         'label' => 'Data Pengembalian'
+                    ],
+                    [
+                        'url' => 'action=kendaraan_tersedia',
+                        'label' => 'Kendaraan Tersedia'
                     ]
                 ];
 
