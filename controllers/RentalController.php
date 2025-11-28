@@ -30,12 +30,29 @@ class RentalController
                 'id_pelanggan'    => $_POST['id_pelanggan']
             ];
 
-            if ($this->model->createRental($data)) {
-                header("Location: index.php?action=rental_list&message=created");
+            $result = $this->model->createRentalWithTransaction($data);
+
+            if ($result === true) {
+                header('Location: index.php?action=rental_list&message=created');
                 exit();
             } else {
-                $error = "Gagal menambah data rental";
+                $error = $result;
+
+                $kendaraan_list = $this->model->getAllKendaraan();
+                $sopir_list      = $this->model->getAllSopir();
+                $pelanggan_list  = $this->model->getAllPelanggan();
+
+                include 'views/rental/rental_form.php';
+                return;
             }
+
+            // Code create lama
+            // if ($this->model->createRental($data)) {
+            //     header("Location: index.php?action=rental_list&message=created");
+            //     exit();
+            // } else {
+            //     $error = "Gagal menambah data rental";
+            // }
         }
 
         // Ambil list kendaraan, sopir, dan pelanggan untuk dropdown

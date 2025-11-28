@@ -9,6 +9,94 @@ class RentalModel
         $this->conn = $db;
     }
 
+    public function createRentalWithTransaction($data): bool|string
+    {
+        try {
+            // BEGIN TRANSACTION
+            $this->conn->beginTransaction();
+
+            // Cek Status Kendaraan dan lock
+            $checkKendaraan = "SELECT id_kendaraan, status 
+                              FROM kendaraan 
+                              WHERE id_kendaraan = :id_kendaraan 
+                              FOR UPDATE";
+
+            $stmtCheck = $this->conn->prepare($checkKendaraan);
+            $stmtCheck->bindParam(':id_kendaraan', $data['id_kendaraan'], PDO::PARAM_INT);
+            $stmtCheck->execute();
+            $kendaraan = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+            if (!$kendaraan || $kendaraan['status'] !== 'Tersedia') {
+                if ($kendaraan['status'] === 'Disewa') {
+                    throw new Exception("Kendaraan sedang disewa");
+                }else if ($kendaraan['status'] === 'Perawatan') {
+                    throw new Exception("Kendaraan sedang masa perawatan");
+                }
+                throw new Exception("Kendaraan tidak tersedia");
+            }
+
+            // Cek Status Sopir dan lock
+            $checkSopir = "SELECT id_sopir, status_sopir 
+                          FROM sopir 
+                          WHERE id_sopir = :id_sopir 
+                          FOR UPDATE";
+
+            $stmtCheck = $this->conn->prepare($checkSopir);
+            $stmtCheck->bindParam(':id_sopir', $data['id_sopir'], PDO::PARAM_INT);
+            $stmtCheck->execute();
+            $sopir = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+            if (!$sopir || $sopir['status_sopir'] !== 'Tersedia') {
+                throw new Exception("Sopir tidak tersedia");
+            }
+
+            // Savepoint setelah validasi status berhasil
+            $this->conn->exec("SAVEPOINT sp_after_validation");
+
+            // Update status sopir
+            $updateSopir = "UPDATE sopir 
+                           SET status_sopir = 'Tidak Tersedia' 
+                           WHERE id_sopir = :id_sopir";
+
+            $stmtUpdate = $this->conn->prepare($updateSopir);
+            $stmtUpdate->bindParam(':id_sopir', $data['id_sopir'], PDO::PARAM_INT);
+            $stmtUpdate->execute();
+
+            // Insert data rental
+            $insertRental = "INSERT INTO rental 
+                            (id_kendaraan, id_sopir, id_pelanggan, 
+                             tanggal_sewa, tanggal_kembali, total_biaya, status_rental) 
+                            VALUES 
+                            (:id_kendaraan, :id_sopir, :id_pelanggan, 
+                             :tanggal_sewa, :tanggal_kembali, :total_biaya, 'Aktif')";
+
+            $stmtRental = $this->conn->prepare($insertRental);
+            $stmtRental->bindParam(':id_kendaraan', $data['id_kendaraan'], PDO::PARAM_INT);
+            $stmtRental->bindParam(':id_sopir', $data['id_sopir'], PDO::PARAM_INT);
+            $stmtRental->bindParam(':id_pelanggan', $data['id_pelanggan'], PDO::PARAM_INT);
+            $stmtRental->bindParam(':tanggal_sewa', $data['tanggal_sewa']);
+            $stmtRental->bindParam(':tanggal_kembali', $data['tanggal_kembali']);
+            $stmtRental->bindParam(':total_biaya', $data['total_biaya']);
+            $stmtRental->execute();
+
+            // COMMIT
+            $this->conn->commit();
+
+            return true;
+        } catch (Exception $e) {
+            if ($this->conn->inTransaction()) {
+                try {
+                    $this->conn->exec("ROLLBACK TO SAVEPOINT sp_after_validation");
+                } catch (Exception $savepointError) {
+                    // Jika savepoint belum dibuat, rollback total
+                    $this->conn->rollback();
+                }
+            }
+
+            return $e->getMessage();
+        }
+    }
+
     // GET ALL DATA
     public function getAllRental()
     {
