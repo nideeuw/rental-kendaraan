@@ -19,19 +19,33 @@ include __DIR__ . '/../../includes/header.php';
             <div class="form-group">
                 <label class="form-label">Tanggal Pengembalian</label>
                 <input type="date" name="tanggal_pengembalian" class="form-input"
-                       value="<?= htmlspecialchars($pengembalian['tanggal_pengembalian'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($pengembalian['tanggal_pengembalian'] ?? '') ?>" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Kondisi Kendaraan</label>
-                <input type="text" name="kondisi_kendaraan" class="form-input"
-                       value="<?= htmlspecialchars($pengembalian['kondisi_kendaraan'] ?? '') ?>" required>
+                <select name="kondisi_kendaraan" class="form-input" required>
+                    <option value="">-- Pilih Kondisi --</option>
+                    <option value="Tersedia"
+                        <?= (isset($pengembalian) && $pengembalian['kondisi_kendaraan'] == 'Tersedia') ? 'selected' : '' ?>>
+                        Tersedia
+                    </option>
+                    <option value="Perawatan"
+                        <?= (isset($pengembalian) && $pengembalian['kondisi_kendaraan'] == 'Perawatan') ? 'selected' : '' ?>>
+                        Perawatan
+                    </option>
+                    <option value="Tidak Tersedia"
+                        <?= (isset($pengembalian) && $pengembalian['kondisi_kendaraan'] == 'Tidak Tersedia') ? 'selected' : '' ?>>
+                        Tidak Tersedia
+                    </option>
+                </select>
             </div>
+
 
             <div class="form-group">
                 <label class="form-label">Denda</label>
                 <input type="number" name="denda" class="form-input"
-                       value="<?= htmlspecialchars($pengembalian['denda'] ?? 0) ?>" required>
+                    value="<?= htmlspecialchars($pengembalian['denda'] ?? 0) ?>" required>
             </div>
 
             <div class="form-group">
