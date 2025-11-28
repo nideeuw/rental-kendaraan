@@ -85,4 +85,10 @@ class SopirController
 
         include 'views/sopir/sopir_list.php';
     }
+
+    public function sopirTersedia(): void
+    {
+        $kendaraan = $this->model->getSopirTersedia();
+        include 'views/sopir/sopir_tersedia.php';
+    }
 }

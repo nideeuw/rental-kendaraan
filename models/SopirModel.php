@@ -94,4 +94,13 @@ class SopirModel
         $stmt->execute();
         return $stmt;
     }
+
+    // MEMANGGIL VIEW SOPIR TERSEDIA
+    public function getSopirTersedia()
+    {
+        $query = "SELECT * FROM vw_sopirtersedia";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

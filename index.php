@@ -12,6 +12,8 @@ require_once 'models/RentalModel.php';
 require_once 'controllers/RentalController.php';
 require_once 'models/pengembalianModel.php';
 require_once 'controllers/PengembalianController.php';
+require_once 'models/LaporanTransaksiModel.php';
+require_once 'controllers/LaporanTransaksiController.php';
 
 
 
@@ -36,6 +38,9 @@ $rentalController = new RentalController($rentalModel);
 //Tabel Pengembalian
 $pengambalianModel = new pengembalianModel($db);
 $pengembalianController = new PengembalianController($pengambalianModel);
+
+$laporanTransaksiModel = new LaporanTransaksiModel($db);
+$laporanTransaksiController = new LaporanTransaksiController($laporanTransaksiModel);
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'tipe_kendaraan_list';
 
@@ -148,6 +153,21 @@ switch ($action) {
   case 'kendaraan_tersedia':
     $controller = new KendaraanController($kendaraanModel);
     $controller->kendaraanTersedia();
+    break;
+
+  case 'sopir_tersedia':
+    $controller = new SopirController($sopirModel);
+    $controller->sopirTersedia();
+    break;
+  
+  case 'laporan_transaksi':
+    $controller = new LaporanTransaksiController($laporanTransaksiModel);
+    $controller->laporanTransaksi();
+    break;
+
+  case 'refresh_laporan':
+    $controller = new LaporanTransaksiController($laporanTransaksiModel);
+    $controller->refreshTransaksi();
     break;
 
   default:

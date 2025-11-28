@@ -53,6 +53,14 @@
                     [
                         'url' => 'action=kendaraan_tersedia',
                         'label' => 'Kendaraan Tersedia'
+                    ],
+                    [
+                        'url' => 'action=sopir_tersedia',
+                        'label' => 'Sopir Tersedia'
+                    ],
+                    [
+                        'url' => 'action=laporan_transaksi',
+                        'label' => 'Laporan Transaksi'
                     ]
                 ];
 
