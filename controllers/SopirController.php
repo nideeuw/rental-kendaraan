@@ -88,7 +88,7 @@ class SopirController
 
     public function sopirTersedia(): void
     {
-        $kendaraan = $this->model->getSopirTersedia();
+        $sopir = $this->model->getSopirTersedia();
         include 'views/sopir/sopir_tersedia.php';
     }
 }
