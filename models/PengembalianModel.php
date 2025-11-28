@@ -49,6 +49,7 @@ class PengembalianModel
                   LEFT JOIN kendaraan k ON r.id_kendaraan = k.id_kendaraan
                   LEFT JOIN sopir s ON r.id_sopir = s.id_sopir
                   LEFT JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan
+                  WHERE k.status = 'Tersedia' 
                   ORDER BY r.id_rental DESC";
 
         $stmt = $this->conn->prepare($query);
