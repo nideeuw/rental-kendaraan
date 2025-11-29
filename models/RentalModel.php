@@ -296,30 +296,34 @@ class RentalModel
             t.nama_tipe,
             s.nama_sopir,
             p.nama_pelanggan
-          FROM " . $this->table_name . " r
-          LEFT JOIN kendaraan k ON r.id_kendaraan = k.id_kendaraan
-          LEFT JOIN tipe_kendaraan t ON k.id_tipe = t.id_tipe
-          LEFT JOIN sopir s ON r.id_sopir = s.id_sopir
-          LEFT JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan
-          WHERE k.plat_nomor ILIKE :keyword
-             OR k.merk ILIKE :keyword
-             OR k.warna ILIKE :keyword
-             OR t.nama_tipe ILIKE :keyword
-             OR s.nama_sopir ILIKE :keyword
-             OR p.nama_pelanggan ILIKE :keyword
-             OR r.status_rental ILIKE :keyword
-          ORDER BY r.id_rental DESC
-          LIMIT :limit OFFSET :offset";
+        FROM " . $this->table_name . " r
+        LEFT JOIN kendaraan k ON r.id_kendaraan = k.id_kendaraan
+        LEFT JOIN tipe_kendaraan t ON k.id_tipe = t.id_tipe
+        LEFT JOIN sopir s ON r.id_sopir = s.id_sopir
+        LEFT JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan
+        WHERE 
+            k.plat_nomor ILIKE :wild
+            OR k.merk ILIKE :wild
+            OR k.warna ILIKE :wild
+            OR t.nama_tipe ILIKE :wild
+            OR s.nama_sopir ILIKE :wild
+            OR r.status_rental ILIKE :wild
+            OR p.searchable @@ plainto_tsquery('simple', :tsquery)
+        ORDER BY r.id_rental DESC
+        LIMIT :limit OFFSET :offset";
 
         $stmt = $this->conn->prepare($query);
-        $kw = "%{$keyword}%";
-        $stmt->bindParam(":keyword", $kw);
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
 
+        $wild = "%{$keyword}%";
+        $stmt->bindValue(":wild", $wild, PDO::PARAM_STR);
+        $stmt->bindValue(":tsquery", $keyword, PDO::PARAM_STR);
+        $stmt->bindValue(":limit", (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(":offset", (int)$offset, PDO::PARAM_INT);
+
+        $stmt->execute();
         return $stmt;
     }
+
 
     public function getTotalSearch($keyword)
     {
