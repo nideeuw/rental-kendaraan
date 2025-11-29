@@ -18,7 +18,7 @@ include __DIR__ . '/../../includes/header.php';
 
             <div class="form-group">
                 <label class="form-label">Tanggal Pengembalian</label>
-                <input type="date" name="tanggal_pengembalian" class="form-input"
+                <input type="date" name="tanggal_pengembalian" id="tanggal_pengembalian" class="form-input"
                     value="<?= htmlspecialchars($pengembalian['tanggal_pengembalian'] ?? '') ?>" required>
             </div>
 
@@ -26,17 +26,13 @@ include __DIR__ . '/../../includes/header.php';
                 <label class="form-label">Kondisi Kendaraan</label>
                 <select name="kondisi_kendaraan" class="form-input" required>
                     <option value="">-- Pilih Kondisi --</option>
-                    <option value="Tersedia"
-                        <?= (isset($pengembalian) && $pengembalian['kondisi_kendaraan'] == 'Tersedia') ? 'selected' : '' ?>>
-                        Tersedia
+                    <option value="Baik"
+                        <?= (isset($pengembalian) && $pengembalian['kondisi_kendaraan'] == 'Baik') ? 'selected' : '' ?>>
+                        Baik
                     </option>
-                    <option value="Perawatan"
-                        <?= (isset($pengembalian) && $pengembalian['kondisi_kendaraan'] == 'Perawatan') ? 'selected' : '' ?>>
-                        Perawatan
-                    </option>
-                    <option value="Tidak Tersedia"
-                        <?= (isset($pengembalian) && $pengembalian['kondisi_kendaraan'] == 'Tidak Tersedia') ? 'selected' : '' ?>>
-                        Tidak Tersedia
+                    <option value="Rusak"
+                        <?= (isset($pengembalian) && $pengembalian['kondisi_kendaraan'] == 'Rusak') ? 'selected' : '' ?>>
+                        Rusak
                     </option>
                 </select>
             </div>
@@ -44,18 +40,21 @@ include __DIR__ . '/../../includes/header.php';
 
             <div class="form-group">
                 <label class="form-label">Denda</label>
-                <input type="number" name="denda" class="form-input"
-                    value="<?= htmlspecialchars($pengembalian['denda'] ?? 0) ?>" required>
+                <input type="number" name="denda" id="denda" class="form-input"
+                    value="<?= htmlspecialchars($pengembalian['denda'] ?? 0) ?>" <?= !isset($pengembalian) ? 'readonly' : '' ?>>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Rental</label>
-                <select name="id_rental" class="form-input" required>
+                <select name="id_rental" id="id_rental" class="form-input" required>
                     <option value="">-- Pilih Rental --</option>
                     <?php while ($row = $rental_list->fetch(PDO::FETCH_ASSOC)): ?>
                         <option value="<?= $row['id_rental'] ?>"
+                            data-tanggal-kembali="<?= $row['tanggal_kembali'] ?>"
+                            data-tarif="<?= $row['tarif_harian'] ?>"
                             <?= (isset($pengembalian) && $pengembalian['id_rental'] == $row['id_rental']) ? 'selected' : '' ?>>
-                            <?= "Rental ID {$row['id_rental']} - {$row['plat_nomor']} ({$row['nama_pelanggan']})"; ?>
+                            <?= htmlspecialchars("Rental ID {$row['id_rental']} - {$row['plat_nomor']} ({$row['nama_pelanggan']})"); ?>
+                        </option>
                         </option>
                     <?php endwhile; ?>
                 </select>

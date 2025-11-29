@@ -10,7 +10,15 @@ class PengembalianController
 
     public function list(): void
     {
-        $pengembalian = $this->model->getAllPengembalian();
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+        $total = $this->model->getTotal();
+        $pagination = paginate($page, $total, $perPage);
+
+        $pengembalian = $this->model->getAllPengembalian($pagination['limit'], $pagination['offset']);
         include 'views/pengembalian/pengembalian_list.php';
     }
 
@@ -74,16 +82,52 @@ class PengembalianController
         exit();
     }
 
-    
     public function search(): void
     {
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
-            $pengembalian = $this->model->searchPengembalian($_GET['keyword']);
+            // Ada keyword search
+            $searchKeyword = $_GET['keyword'];
+            $total = $this->model->getTotalSearch($searchKeyword);
+            $pagination = paginate($page, $total, $perPage);
+
+            $pengembalian = $this->model->searchPengembalian($searchKeyword, $pagination['limit'], $pagination['offset']);
         } else {
-            $pengembalian = $this->model->getAllPengembalian();
+            // Tidak ada keyword, redirect ke list
+            header("Location: index.php?action=pengembalian_list");
+            exit();
         }
 
         include 'views/pengembalian/pengembalian_list.php';
     }
+
+    // untuk trigger hitung denda otomatis
+    public function getRentalDetail(): void
+    {
+        header('Content-Type: application/json');
+
+        if (!isset($_GET['id_rental'])) {
+            echo json_encode(['error' => 'ID Rental tidak ditemukan']);
+            exit();
+        }
+
+        $id_rental = $_GET['id_rental'];
+        $detail = $this->model->getRentalDetailForDenda($id_rental);
+
+        if ($detail) {
+            echo json_encode([
+                'success' => true,
+                'tanggal_kembali' => $detail['tanggal_kembali'],
+                'tarif_harian' => $detail['tarif_harian']
+            ]);
+        } else {
+            echo json_encode(['error' => 'Data rental tidak ditemukan']);
+        }
+
+        exit();
+    }
 }
-?>

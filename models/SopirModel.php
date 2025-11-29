@@ -11,7 +11,7 @@ class SopirModel
 
 
     // GET ALL DATA
-    public function getAllSopir()
+    public function getAllSopir($limit, $offset)
     {
         $query = "SELECT 
                     id_sopir,
@@ -19,9 +19,12 @@ class SopirModel
                     no_sim,
                     tarif_harian,
                     status_sopir
-                  FROM " . $this->table_name;
+                  FROM " . $this->table_name . "                 
+                  LIMIT :limit OFFSET :offset";
 
         $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt;
     }
@@ -81,26 +84,138 @@ class SopirModel
     }
 
     // SEARCH
-    public function searchSopir($keyword)
+    public function searchSopir($keyword, $limit, $offset)
     {
 
         $query = "SELECT id_Sopir, nama_sopir, no_sim, tarif_harian, status_sopir FROM " . $this->table_name . "
                   WHERE nama_sopir LIKE :keyword
-                  ORDER BY nama_sopir ASC";
+                  ORDER BY nama_sopir ASC
+                  LIMIT :limit OFFSET :offset";
 
         $stmt = $this->conn->prepare($query);
         $kw = "%{$keyword}%";
         $stmt->bindParam(":keyword", $kw);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt;
     }
 
+    public function getTotalSearch($keyword)
+{
+    $query = "SELECT COUNT(*) as total
+              FROM " . $this->table_name . "
+              WHERE nama_sopir LIKE :keyword";
+
+    $stmt = $this->conn->prepare($query);
+    $kw = "%{$keyword}%";
+    $stmt->bindParam(":keyword", $kw);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    return (int)$result['total'];
+}
+
     // MEMANGGIL VIEW SOPIR TERSEDIA
-    public function getSopirTersedia()
+    public function getSopirTersedia($limit, $offset, $filters = [])
     {
-        $query = "SELECT * FROM vw_sopirtersedia";
+        // Gunakan subquery untuk filtering
+        $query = "SELECT * FROM (
+                    SELECT * FROM vw_sopirtersedia
+                  ) AS hasil";
+
+        $params = [];
+        $conditions = [];
+
+        // SEARCH: Cari di nama sopir dan no SIM
+        if (!empty($filters['search'])) {
+            $conditions[] = "(
+                nama_sopir ILIKE :search OR 
+                no_sim ILIKE :search
+            )";
+            $searchTerm = '%' . $filters['search'] . '%';
+            $params['search'] = $searchTerm;
+        }
+
+        // WHERE clause
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(' AND ', $conditions);
+        }
+
+        // SORTING
+        $allowedSort = [
+            'nama_sopir',
+            'no_sim',
+            'tarif_harian'
+        ];
+
+        $sortBy = !empty($filters['sort']) && in_array($filters['sort'], $allowedSort)
+            ? $filters['sort']
+            : 'nama_sopir';
+
+        $sortOrder = !empty($filters['order']) && strtoupper($filters['order']) === 'ASC'
+            ? 'ASC'
+            : 'DESC';
+
+        $query .= " ORDER BY {$sortBy} {$sortOrder}";
+        $query .= " LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->conn->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTotal()
+    {
+        $query = "SELECT COUNT(*) as total FROM sopir";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (int)$result['total'];
+    }
+
+    public function getTotalSopirTersedia($filters = [])
+    {
+        $query = "SELECT COUNT(*) as total FROM (
+                    SELECT * FROM vw_sopirtersedia
+                  ) AS hasil";
+
+        $params = [];
+        $conditions = [];
+
+        // SEARCH
+        if (!empty($filters['search'])) {
+            $conditions[] = "(
+                nama_sopir ILIKE :search OR 
+                no_sim ILIKE :search
+            )";
+            $searchTerm = '%' . $filters['search'] . '%';
+            $params['search'] = $searchTerm;
+        }
+
+        // WHERE clause
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(' AND ', $conditions);
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (int)$result['total'];
     }
 }

@@ -40,6 +40,7 @@ include __DIR__ . '/../../includes/header.php';
                 <select name="status" class="form-input" required>
                     <option value="Tersedia" <?= isset($kendaraan) && $kendaraan['status'] == 'Tersedia' ? 'selected' : '' ?>>Tersedia</option>
                     <option value="Disewa" <?= isset($kendaraan) && $kendaraan['status'] == 'Disewa' ? 'selected' : '' ?>>Disewa</option>
+                    <option value="Perawatan" <?= isset($kendaraan) && $kendaraan['status'] == 'Perawatan' ? 'selected' : '' ?>>Perawatan</option>
                 </select>
             </div>
 

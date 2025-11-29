@@ -25,7 +25,7 @@ include __DIR__ . '/../../includes/header.php';
         <form method="GET" action="index.php">
             <input type="hidden" name="action" value="pengembalian_search">
             <input type="text" name="keyword" class="search-input" placeholder="Cari pengembalian..."
-                   value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
+                value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
         </form>
     </div>
 
@@ -35,35 +35,35 @@ include __DIR__ . '/../../includes/header.php';
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Rental ID</th>
+                        <th>Pelanggan</th>
+                        <th>Sopir</th>
+                        <th>Plat Kendaraan</th>
                         <th>Tanggal Pengembalian</th>
                         <th>Kondisi Kendaraan</th>
                         <th>Denda</th>
-                        <th>Rental ID</th>
-                        <th>Plat Kendaraan</th>
-                        <th>Sopir</th>
-                        <th>Pelanggan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php $no = 1; ?>
+                    <?php $no = $pagination['from']; ?>
                     <?php while ($row = $pengembalian->fetch(PDO::FETCH_ASSOC)): ?>
                         <tr>
                             <td><?= $no++; ?></td>
+                            <td><?= htmlspecialchars($row['id_rental']); ?></td>
+                            <td><?= htmlspecialchars($row['nama_pelanggan']); ?></td>
+                            <td><?= htmlspecialchars($row['nama_sopir']); ?></td>
+                            <td><?= htmlspecialchars($row['plat_nomor']); ?></td>
                             <td><?= htmlspecialchars($row['tanggal_pengembalian']); ?></td>
                             <td><?= htmlspecialchars($row['kondisi_kendaraan']); ?></td>
                             <td>Rp <?= htmlspecialchars($row['denda']); ?></td>
-                            <td><?= htmlspecialchars($row['id_rental']); ?></td>
-                            <td><?= htmlspecialchars($row['plat_nomor']); ?></td>
-                            <td><?= htmlspecialchars($row['nama_sopir']); ?></td>
-                            <td><?= htmlspecialchars($row['nama_pelanggan']); ?></td>
                             <td>
                                 <div class="btn-group">
                                     <a href="index.php?action=pengembalian_edit&id=<?= $row['id_pengembalian']; ?>"
-                                       class="btn btn-edit">Edit</a>
+                                        class="btn btn-edit">Edit</a>
                                     <a href="index.php?action=pengembalian_delete&id=<?= $row['id_pengembalian']; ?>"
-                                       class="btn btn-delete"
-                                       onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
+                                        class="btn btn-delete"
+                                        onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
                                 </div>
                             </td>
                         </tr>
@@ -76,6 +76,22 @@ include __DIR__ . '/../../includes/header.php';
             <h3>Tidak ada data pengembalian</h3>
             <p>Silakan tambahkan data pengembalian baru</p>
         </div>
+    <?php endif; ?>
+
+    <!-- Pagination -->
+    <?php if (isset($pagination) && $pagination['total'] > 0): ?>
+        <?php
+        // Build URL berdasarkan context (search atau list)
+        if (isset($searchKeyword) && !empty($searchKeyword)) {
+            // Kalau dari search
+            $url = 'index.php?action=kendaraan_search&keyword=' . urlencode($searchKeyword);
+        } else {
+            // Kalau dari list biasa
+            $url = 'index.php?action=pengembalian_list';
+        }
+        
+        showPagination($pagination, $url);
+        ?>
     <?php endif; ?>
 </div>
 

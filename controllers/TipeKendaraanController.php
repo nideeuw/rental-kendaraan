@@ -10,7 +10,15 @@ class TipeKendaraanController
 
     public function list(): void
     {
-        $tipe = $this->model->getAllTipe();
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+        $total = $this->model->getTotal();
+        $pagination = paginate($page, $total, $perPage);
+        
+        $tipe = $this->model->getAllTipe($pagination['limit'], $pagination['offset']);
         include 'views/tipe_kendaraan/tipe_kendaraan_list.php';
     }
 
@@ -70,10 +78,23 @@ class TipeKendaraanController
 
     public function search(): void
     {
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
-            $tipe = $this->model->searchTipe($_GET['keyword']);
+            // Ada keyword search
+            $searchKeyword = $_GET['keyword'];
+            $tipe = $this->model->searchTipe($searchKeyword);
+
+            // Hitung total hasil search
+            $total = $tipe->rowCount();
+            $pagination = paginate($page, $total, $perPage);
         } else {
-            $tipe = $this->model->getAllTipe();
+            // Tidak ada keyword, redirect ke list
+            header("Location: index.php?action=tipe_kendaraan_list");
+            exit();
         }
 
         include 'views/tipe_kendaraan/tipe_kendaraan_list.php';

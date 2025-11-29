@@ -37,29 +37,29 @@ include __DIR__ . '/../../includes/header.php';
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Plat Nomor</th>
+                        <th>Tipe</th>
                         <th>Merk</th>
                         <th>Warna</th>
-                        <th>Status</th>
+                        <th>Plat Nomor</th>
                         <th>Kapasitas</th>
                         <th>Tarif Harian</th>
-                        <th>Tipe</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <?php $no = 1; ?>
+                    <?php $no = $pagination['from']; ?>
                     <?php while ($row = $kendaraan->fetch(PDO::FETCH_ASSOC)): ?>
                         <tr>
                             <td><?= $no++; ?></td>
-                            <td><?= htmlspecialchars($row['plat_nomor']); ?></td>
+                            <td><?= htmlspecialchars($row['nama_tipe']); ?></td>
                             <td><?= htmlspecialchars($row['merk']); ?></td>
                             <td><?= htmlspecialchars($row['warna']); ?></td>
-                            <td><?= htmlspecialchars($row['status']); ?></td>
+                            <td><?= htmlspecialchars($row['plat_nomor']); ?></td>
                             <td><?= htmlspecialchars($row['kapasitas']); ?> orang</td>
                             <td>Rp <?= htmlspecialchars($row['tarif_harian']); ?> / hari</td>
-                            <td><?= htmlspecialchars($row['nama_tipe']); ?></td>
+                            <td><?= htmlspecialchars($row['status']); ?></td>
 
                             <td>
                                 <div class="btn-group">
@@ -104,6 +104,23 @@ include __DIR__ . '/../../includes/header.php';
             <p>Silakan tambahkan kendaraan baru</p>
         </div>
     <?php endif; ?>
+
+    <!-- Pagination -->
+    <?php if (isset($pagination) && $pagination['total'] > 0): ?>
+        <?php
+        // Build URL berdasarkan context (search atau list)
+        if (isset($searchKeyword) && !empty($searchKeyword)) {
+            // Kalau dari search
+            $url = 'index.php?action=kendaraan_search&keyword=' . urlencode($searchKeyword);
+        } else {
+            // Kalau dari list biasa
+            $url = 'index.php?action=kendaraan_list';
+        }
+        
+        showPagination($pagination, $url);
+        ?>
+    <?php endif; ?>
+
 </div>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>

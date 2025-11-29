@@ -24,13 +24,12 @@ include __DIR__ . '/../../includes/header.php';
     <div class="search-box">
         <form method="GET" action="index.php">
             <input type="hidden" name="action" value="rental_search">
-            <input 
-                type="text" 
-                name="keyword" 
-                class="search-input" 
+            <input
+                type="text"
+                name="keyword"
+                class="search-input"
                 placeholder="Cari rental..."
-                value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>"
-            >
+                value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
         </form>
     </div>
 
@@ -40,40 +39,38 @@ include __DIR__ . '/../../includes/header.php';
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Pelanggan</th>
+                        <th>Sopir</th>
+                        <th>Kendaraan</th>
                         <th>Tanggal Sewa</th>
                         <th>Tanggal Kembali</th>
                         <th>Total Biaya</th>
                         <th>Status</th>
-                        <th>Kendaraan</th>
-                        <th>Sopir</th>
-                        <th>Pelanggan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php $no = 1; ?>
+                    <?php $no = $pagination['from']; ?>
                     <?php while ($row = $rental->fetch(PDO::FETCH_ASSOC)): ?>
                         <tr>
                             <td><?= $no++; ?></td>
+                            <td><?= htmlspecialchars($row['nama_pelanggan']); ?></td>
+                            <td><?= htmlspecialchars($row['nama_sopir']); ?></td>
+                            <td><?= htmlspecialchars($row['plat_nomor']); ?></td>
                             <td><?= htmlspecialchars($row['tanggal_sewa']); ?></td>
                             <td><?= htmlspecialchars($row['tanggal_kembali']); ?></td>
                             <td>Rp <?= htmlspecialchars($row['total_biaya']); ?></td>
                             <td><?= htmlspecialchars($row['status_rental']); ?></td>
-                            <td><?= htmlspecialchars($row['plat_nomor']); ?></td>
-                            <td><?= htmlspecialchars($row['nama_sopir']); ?></td>
-                            <td><?= htmlspecialchars($row['nama_pelanggan']); ?></td>
                             <td>
                                 <div class="btn-group">
-                                    <a 
-                                        href="index.php?action=rental_edit&id=<?= $row['id_rental']; ?>" 
-                                        class="btn btn-edit"
-                                    >Edit</a>
+                                    <a
+                                        href="index.php?action=rental_edit&id=<?= $row['id_rental']; ?>"
+                                        class="btn btn-edit">Edit</a>
 
-                                    <a 
-                                        href="index.php?action=rental_delete&id=<?= $row['id_rental']; ?>" 
+                                    <a
+                                        href="index.php?action=rental_delete&id=<?= $row['id_rental']; ?>"
                                         class="btn btn-delete"
-                                        onclick="return confirm('Yakin hapus data ini?')"
-                                    >Hapus</a>
+                                        onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
                                 </div>
                             </td>
                         </tr>
@@ -87,6 +84,22 @@ include __DIR__ . '/../../includes/header.php';
             <h3>Tidak ada data rental</h3>
             <p>Silakan tambahkan rental baru</p>
         </div>
+    <?php endif; ?>
+
+    <!-- Pagination -->
+    <?php if (isset($pagination) && $pagination['total'] > 0): ?>
+        <?php
+        // Build URL berdasarkan context (search atau list)
+        if (isset($searchKeyword) && !empty($searchKeyword)) {
+            // Kalau dari search
+            $url = 'index.php?action=kendaraan_search&keyword=' . urlencode($searchKeyword);
+        } else {
+            // Kalau dari list biasa
+            $url = 'index.php?action=rental_list';
+        }
+        
+        showPagination($pagination, $url);
+        ?>
     <?php endif; ?>
 </div>
 

@@ -10,7 +10,7 @@ class PengembalianModel
     }
 
     // GET ALL DATA
-    public function getAllPengembalian()
+    public function getAllPengembalian($limit, $offset)
     {
         $query = "SELECT 
                     p.id_pengembalian,
@@ -26,9 +26,12 @@ class PengembalianModel
                   LEFT JOIN kendaraan k ON r.id_kendaraan = k.id_kendaraan
                   LEFT JOIN sopir s ON r.id_sopir = s.id_sopir
                   LEFT JOIN pelanggan pl ON r.id_pelanggan = pl.id_pelanggan
-                  ORDER BY p.id_pengembalian DESC";
+                  ORDER BY p.id_pengembalian DESC
+                  LIMIT :limit OFFSET :offset";
 
         $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt;
     }
@@ -43,13 +46,14 @@ class PengembalianModel
                     r.total_biaya,
                     r.status_rental,
                     k.plat_nomor,
+                    k.tarif_harian,
                     s.nama_sopir,
                     p.nama_pelanggan    
                   FROM rental r
                   LEFT JOIN kendaraan k ON r.id_kendaraan = k.id_kendaraan
                   LEFT JOIN sopir s ON r.id_sopir = s.id_sopir
                   LEFT JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan
-                  WHERE k.status = 'Tersedia' 
+                  WHERE r.status_rental = 'Aktif'
                   ORDER BY r.id_rental DESC";
 
         $stmt = $this->conn->prepare($query);
@@ -61,14 +65,13 @@ class PengembalianModel
     public function createPengembalian($data)
     {
         $query = "INSERT INTO " . $this->table_name . "
-                  (tanggal_pengembalian, kondisi_kendaraan, denda, id_rental)
+                  (tanggal_pengembalian, kondisi_kendaraan, id_rental)
                   VALUES 
-                  (:tanggal_pengembalian, :kondisi_kendaraan, :denda, :id_rental)";
+                  (:tanggal_pengembalian, :kondisi_kendaraan, :id_rental)";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":tanggal_pengembalian", $data['tanggal_pengembalian']);
         $stmt->bindParam(":kondisi_kendaraan", $data['kondisi_kendaraan']);
-        $stmt->bindParam(":denda", $data['denda']);
         $stmt->bindParam(":id_rental", $data['id_rental']);
         return $stmt->execute();
     }
@@ -112,7 +115,7 @@ class PengembalianModel
     }
 
     // SEARCH DATA
-    public function searchPengembalian($keyword)
+    public function searchPengembalian($keyword, $limit, $offset)
     {
         $query = "SELECT 
                     p.id_pengembalian,
@@ -131,12 +134,61 @@ class PengembalianModel
                   WHERE k.plat_nomor ILIKE :keyword
                      OR s.nama_sopir ILIKE :keyword
                      OR pl.nama_pelanggan ILIKE :keyword
-                  ORDER BY p.id_pengembalian DESC";
+                  ORDER BY p.id_pengembalian DESC
+                  LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->conn->prepare($query);
+        $kw = "%{$keyword}%";
+        $stmt->bindParam(":keyword", $kw);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt;
+    }
+    public function getTotalSearch($keyword)
+    {
+        $query = "SELECT COUNT(*) as total
+              FROM " . $this->table_name . " p
+              LEFT JOIN rental r ON p.id_rental = r.id_rental
+                  LEFT JOIN kendaraan k ON r.id_kendaraan = k.id_kendaraan
+                  LEFT JOIN sopir s ON r.id_sopir = s.id_sopir
+                  LEFT JOIN pelanggan pl ON r.id_pelanggan = pl.id_pelanggan
+              WHERE k.plat_nomor ILIKE :keyword
+                OR s.nama_sopir ILIKE :keyword
+                OR pl.nama_pelanggan ILIKE :keyword";
 
         $stmt = $this->conn->prepare($query);
         $kw = "%{$keyword}%";
         $stmt->bindParam(":keyword", $kw);
         $stmt->execute();
-        return $stmt;
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (int)$result['total'];
+    }
+
+    // untuk trigger hitung denda otomatis
+    public function getRentalDetailForDenda($id_rental)
+    {
+        $query = "SELECT 
+                r.tanggal_kembali,
+                k.tarif_harian
+              FROM rental r
+              JOIN kendaraan k ON r.id_kendaraan = k.id_kendaraan
+              WHERE r.id_rental = :id_rental";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_rental', $id_rental, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function getTotal()
+    {
+        $query = "SELECT COUNT(*) as total FROM pengembalian";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (int)$result['total'];
     }
 }

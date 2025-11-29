@@ -11,7 +11,15 @@ class PelangganController
 
   public function list(): void
   {
-    $pelanggan = $this->model->getAllPelanggan();
+    require_once __DIR__ . '/../includes/pagination.php';
+
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+    $total = $this->model->getTotal();
+    $pagination = paginate($page, $total, $perPage);
+
+    $pelanggan = $this->model->getAllPelanggan($pagination['limit'], $pagination['offset']);
     include 'views/pelanggan/pelanggan_list.php';
   }
 
@@ -80,10 +88,22 @@ class PelangganController
 
   public function search(): void
   {
+    require_once __DIR__ . '/../includes/pagination.php';
+
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
     if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
-      $pelanggan = $this->model->searchPelanggan($_GET['keyword']);
+      // Ada keyword search
+      $searchKeyword = $_GET['keyword'];
+      $total = $this->model->getTotalSearch($searchKeyword);
+      $pagination = paginate($page, $total, $perPage);
+
+      $pelanggan = $this->model->searchPelanggan($searchKeyword, $pagination['limit'], $pagination['offset']);
     } else {
-      $pelanggan = $this->model->getAllPelanggan();
+      // Tidak ada keyword, redirect ke list
+      header("Location: index.php?action=pelanggan_list");
+      exit();
     }
 
     include 'views/pelanggan/pelanggan_list.php';
@@ -92,18 +112,16 @@ class PelangganController
   // FUNCTION: Total Denda Pelanggan
   public function totalDenda(): void
   {
-      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-          $id = $_POST['id_pelanggan'];
+      $id = $_POST['id_pelanggan'];
 
-          // Ambil hasil dari function PostgreSQL
-          $result = $this->model->getTotalDenda($id);
+      // Ambil hasil dari function PostgreSQL
+      $result = $this->model->getTotalDenda($id);
 
-          include 'views/pelanggan/total_denda_result.php';
-      } else {
-          include 'views/pelanggan/total_denda.php';
-      }
+      include 'views/pelanggan/total_denda_result.php';
+    } else {
+      include 'views/pelanggan/total_denda.php';
+    }
   }
-
 }
-

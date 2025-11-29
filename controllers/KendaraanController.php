@@ -11,7 +11,23 @@ class KendaraanController
 
     public function list(): void
     {
-        $kendaraan = $this->model->getAllKendaraan();
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+        // Ambil filter dari URL
+        $filters = [
+            'search' => isset($_GET['search']) ? trim($_GET['search']) : '',
+            'status' => isset($_GET['status']) ? $_GET['status'] : '',
+            'sort' => isset($_GET['sort']) ? $_GET['sort'] : 'id_kendaraan',
+            'order' => isset($_GET['order']) ? $_GET['order'] : 'DESC'
+        ];
+
+        $total = $this->model->getTotal($filters);
+        $pagination = paginate($page, $total, $perPage);
+
+        $kendaraan = $this->model->getAllKendaraan($pagination['limit'], $pagination['offset']);
         include 'views/kendaraan/kendaraan_list.php';
     }
 
@@ -84,10 +100,23 @@ class KendaraanController
 
     public function search(): void
     {
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
-            $kendaraan = $this->model->searchKendaraan($_GET['keyword']);
+            // Ada keyword search
+            $searchKeyword = $_GET['keyword'];
+
+            $total = $this->model->getTotalSearch($searchKeyword);
+            $pagination = paginate($page, $total, $perPage);
+
+            $kendaraan = $this->model->searchKendaraan($searchKeyword, $pagination['limit'], $pagination['offset']);
         } else {
-            $kendaraan = $this->model->getAllKendaraan();
+            // Tidak ada keyword, redirect ke list
+            header("Location: index.php?action=kendaraan_list");
+            exit();
         }
 
         include 'views/kendaraan/kendaraan_list.php';
@@ -95,7 +124,24 @@ class KendaraanController
 
     public function kendaraanTersedia(): void
     {
-        $kendaraan = $this->model->getKendaraanTersedia();
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+        // Ambil filter dari URL
+        $filters = [
+            'search' => isset($_GET['search']) ? trim($_GET['search']) : '',
+            'status' => isset($_GET['status']) ? $_GET['status'] : '',
+            'sort' => isset($_GET['sort']) ? $_GET['sort'] : 'id_kendaraan',
+            'order' => isset($_GET['order']) ? $_GET['order'] : 'DESC'
+        ];
+
+        // Hitung pagination
+        $total = $this->model->getTotalKendaraanTersedia($filters);
+        $pagination = paginate($page, $total, $perPage);
+
+        $kendaraan = $this->model->getKendaraanTersedia($pagination['limit'], $pagination['offset'], $filters);
         include 'views/kendaraan/kendaraan_tersedia.php';
     }
 

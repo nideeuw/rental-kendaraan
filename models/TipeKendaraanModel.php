@@ -10,10 +10,15 @@ class TipeKendaraanModel
     }
 
     // Ambil semua data
-    public function getAllTipe()
+    public function getAllTipe($limit, $offset)
     {
-        $query = "SELECT id_tipe, nama_tipe FROM " . $this->table_name . " ORDER BY nama_tipe ASC";
+        $query = "SELECT id_tipe, nama_tipe 
+                FROM " . $this->table_name . " 
+                ORDER BY nama_tipe ASC
+                LIMIT :limit OFFSET :offset";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt;
     }
@@ -80,5 +85,15 @@ class TipeKendaraanModel
         $stmt->bindParam(":keyword", $kw);
         $stmt->execute();
         return $stmt;
+    }
+
+    public function getTotal()
+    {
+        $query = "SELECT COUNT(*) as total FROM tipe_kendaraan";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return (int)$result['total'];
     }
 }

@@ -19,7 +19,7 @@ class KendaraanModel
     }
 
     // GET ALL
-    public function getAllKendaraan()
+    public function getAllKendaraan($limit, $offset)
     {
         $query = "SELECT 
                     k.id_kendaraan,
@@ -33,9 +33,12 @@ class KendaraanModel
                     t.nama_tipe
                   FROM kendaraan k
                   LEFT JOIN tipe_kendaraan t ON k.id_tipe = t.id_tipe
-                  ORDER BY k.id_kendaraan DESC";
+                  ORDER BY k.id_kendaraan DESC
+                  LIMIT :limit OFFSET :offset";
 
         $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt;
     }
@@ -103,7 +106,7 @@ class KendaraanModel
     }
 
     // SEARCH
-    public function searchKendaraan($keyword)
+    public function searchKendaraan($keyword, $limit, $offset)
     {
         $query = "SELECT 
                     k.id_kendaraan,
@@ -119,25 +122,100 @@ class KendaraanModel
                   WHERE k.plat_nomor ILIKE :keyword
                      OR k.merk ILIKE :keyword
                      OR k.warna ILIKE :keyword
-                  ORDER BY k.id_kendaraan DESC";
+                  ORDER BY k.id_kendaraan DESC
+                  LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->conn->prepare($query);
+        $kw = "%{$keyword}%";
+        $stmt->bindParam(":keyword", $kw);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt;
+    }
+    public function getTotalSearch($keyword)
+    {
+        $query = "SELECT COUNT(*) as total
+              FROM kendaraan k
+              WHERE k.plat_nomor ILIKE :keyword
+                 OR k.merk ILIKE :keyword
+                 OR k.warna ILIKE :keyword";
 
         $stmt = $this->conn->prepare($query);
         $kw = "%{$keyword}%";
         $stmt->bindParam(":keyword", $kw);
         $stmt->execute();
-        return $stmt;
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (int)$result['total'];
     }
 
-    // MEMANGGIL FUNCTION DATABASE daftar_kendaraan_tersedia()
-    public function getKendaraanTersedia()
+    public function getKendaraanTersedia($limit, $offset, $filters = [])
     {
-        $query = "SELECT * FROM daftar_kendaraan_tersedia()";
+        // Gunakan subquery untuk menghindari masalah dengan function
+        $query = "SELECT * FROM (
+                    SELECT * FROM daftar_kendaraan_tersedia()
+                  ) AS hasil";
+
+        $params = [];
+        $conditions = [];
+
+        // SEARCH: Case insensitive dengan ILIKE (PostgreSQL)
+        // Cari di semua kolom yang mungkin ada
+        if (!empty($filters['search'])) {
+            $conditions[] = "(
+                CAST(id_kendaraan AS TEXT) ILIKE :search OR
+                plat_nomor ILIKE :search OR 
+                merk ILIKE :search OR
+                status ILIKE :search
+            )";
+            $searchTerm = '%' . $filters['search'] . '%';
+            $params['search'] = $searchTerm;
+        }
+
+        // FILTER: Status (gunakan nama kolom 'status' bukan 'status_kendaraan')
+        if (!empty($filters['status']) && $filters['status'] !== '') {
+            $conditions[] = "status = :status";
+            $params['status'] = $filters['status'];
+        }
+
+        // WHERE clause
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(' AND ', $conditions);
+        }
+
+        // SORTING - gunakan nama kolom yang sesuai dengan function
+        $allowedSort = [
+            'id_kendaraan',
+            'plat_nomor',
+            'merk',
+            'status'  // Bukan 'status_kendaraan'
+        ];
+
+        $sortBy = !empty($filters['sort']) && in_array($filters['sort'], $allowedSort)
+            ? $filters['sort']
+            : 'id_kendaraan';
+
+        $sortOrder = !empty($filters['order']) && strtoupper($filters['order']) === 'ASC'
+            ? 'ASC'
+            : 'DESC';
+
+        $query .= " ORDER BY {$sortBy} {$sortOrder}";
+        $query .= " LIMIT :limit OFFSET :offset";
+
         $stmt = $this->conn->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    
     public function ubahStatusKendaraan($id_kendaraan, $status_baru)
     {
         $query = "CALL ubah_status_kendaraan(:id_kendaraan, :status_baru)";
@@ -145,5 +223,60 @@ class KendaraanModel
         $stmt->bindParam(':id_kendaraan', $id_kendaraan);
         $stmt->bindParam(':status_baru', $status_baru);
         return $stmt->execute();
+    }
+
+    public function getTotal()
+    {
+        $query = "SELECT COUNT(*) as total FROM kendaraan";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (int)$result['total'];
+    }
+
+    public function getTotalKendaraanTersedia($filters = [])
+    {
+        // ✅ Gunakan subquery (sama seperti getKendaraanTersedia)
+        $query = "SELECT COUNT(*) as total FROM (
+                    SELECT * FROM daftar_kendaraan_tersedia()
+                  ) AS hasil";
+
+        $params = [];
+        $conditions = [];
+
+        // SEARCH
+        if (!empty($filters['search'])) {
+            $conditions[] = "(
+                CAST(id_kendaraan AS TEXT) ILIKE :search OR
+                plat_nomor ILIKE :search OR 
+                merk ILIKE :search OR
+                status ILIKE :search
+            )";
+            $searchTerm = '%' . $filters['search'] . '%';
+            $params['search'] = $searchTerm;
+        }
+
+        // FILTER: Status (gunakan 'status' bukan 'status_kendaraan')
+        if (!empty($filters['status']) && $filters['status'] !== '') {
+            $conditions[] = "status = :status";
+            $params['status'] = $filters['status'];
+        }
+
+        // WHERE clause
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(' AND ', $conditions);
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (int)$result['total'];
     }
 }

@@ -24,13 +24,12 @@ include __DIR__ . '/../../includes/header.php';
     <div class="search-box">
         <form method="GET" action="index.php">
             <input type="hidden" name="action" value="pelanggan_search">
-            <input 
-                type="text" 
-                name="keyword" 
-                class="search-input" 
+            <input
+                type="text"
+                name="keyword"
+                class="search-input"
                 placeholder="Cari pelanggan..."
-                value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>"
-            >
+                value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
         </form>
     </div>
 
@@ -48,7 +47,7 @@ include __DIR__ . '/../../includes/header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php $no = 1; ?>
+                    <?php $no = $pagination['from']; ?>
                     <?php foreach ($pelanggan as $row): ?>
                         <tr>
                             <td><?= $no++; ?></td>
@@ -58,12 +57,12 @@ include __DIR__ . '/../../includes/header.php';
                             <td><?= htmlspecialchars($row['email']); ?></td>
                             <td>
                                 <div class="btn-group">
-                                    <a 
-                                        href="index.php?action=pelanggan_edit&id=<?= $row['id_pelanggan']; ?>" 
+                                    <a
+                                        href="index.php?action=pelanggan_edit&id=<?= $row['id_pelanggan']; ?>"
                                         class="btn btn-edit">Edit</a>
 
-                                    <a 
-                                        href="index.php?action=pelanggan_delete&id=<?= $row['id_pelanggan']; ?>" 
+                                    <a
+                                        href="index.php?action=pelanggan_delete&id=<?= $row['id_pelanggan']; ?>"
                                         class="btn btn-delete"
                                         onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
 
@@ -81,6 +80,22 @@ include __DIR__ . '/../../includes/header.php';
             <h3>Belum ada data pelanggan</h3>
             <p>Silakan tambahkan pelanggan baru</p>
         </div>
+    <?php endif; ?>
+
+    <!-- Pagination -->
+    <?php if (isset($pagination) && $pagination['total'] > 0): ?>
+        <?php
+        // Build URL berdasarkan context (search atau list)
+        if (isset($searchKeyword) && !empty($searchKeyword)) {
+            // Kalau dari search
+            $url = 'index.php?action=kendaraan_search&keyword=' . urlencode($searchKeyword);
+        } else {
+            // Kalau dari list biasa
+            $url = 'index.php?action=pelanggan_list';
+        }
+        
+        showPagination($pagination, $url);
+        ?>
     <?php endif; ?>
 </div>
 

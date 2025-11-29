@@ -1,5 +1,7 @@
 <?php
 require_once 'config/database.php';
+require_once 'models/DashboardModel.php';
+require_once 'controllers/DashboardController.php';
 require_once 'models/TipeKendaraanModel.php';
 require_once 'controllers/TipeKendaraanController.php';
 require_once 'models/KendaraanModel.php';
@@ -12,14 +14,15 @@ require_once 'models/RentalModel.php';
 require_once 'controllers/RentalController.php';
 require_once 'models/pengembalianModel.php';
 require_once 'controllers/PengembalianController.php';
-require_once 'models/LaporanTransaksiModel.php';
-require_once 'controllers/LaporanTransaksiController.php';
-
-
+require_once 'models/LaporanModel.php';
+require_once 'controllers/LaporanController.php';
 
 // db
 $database = new Database();
 $db = $database->getConnection();
+// Dashboard
+$dashboardModel = new DashboardModel($db);
+$dashboardController = new DashboardController($dashboardModel);
 //Tabel Tipe Kendaraan
 $tipeKendaraanModel = new TipeKendaraanModel($db);
 $TipeKendaraanController = new TipeKendaraanController($tipeKendaraanModel);
@@ -38,15 +41,19 @@ $rentalController = new RentalController($rentalModel);
 //Tabel Pengembalian
 $pengambalianModel = new pengembalianModel($db);
 $pengembalianController = new PengembalianController($pengambalianModel);
+// Laporan Transaksi
+$laporanModel = new LaporanModel($db);
+$laporanController = new LaporanController($laporanModel);
 
-$laporanTransaksiModel = new LaporanTransaksiModel($db);
-$laporanTransaksiController = new LaporanTransaksiController($laporanTransaksiModel);
-
-$action = isset($_GET['action']) ? $_GET['action'] : 'tipe_kendaraan_list';
+$action = isset($_GET['action']) ? $_GET['action'] : 'dashboard';
 
 switch ($action) {
-  // tipeKedaraan routes
-  case 'tipe_kendaraan_list':
+  case 'dashboard':
+    $dashboardController->index();
+    break;
+
+  // routes tipe kendaraan
+  case 'tipe_list':
     $TipeKendaraanController->list();
     break;
   case 'tipe_kendaraan_create':
@@ -62,6 +69,7 @@ switch ($action) {
     $TipeKendaraanController->search();
     break;
 
+  // routes kendaraan
   case 'kendaraan_list':
     $KendaraanController->list();
     break;
@@ -78,6 +86,7 @@ switch ($action) {
     $KendaraanController->search();
     break;
 
+  // routes sopir
   case 'sopir_list':
     $sopirController->list();
     break;
@@ -94,7 +103,7 @@ switch ($action) {
     $sopirController->search();
     break;
 
-
+  // routes pelanggan
   case 'pelanggan_list':
     $pelangganController->list();
     break;
@@ -111,6 +120,7 @@ switch ($action) {
     $pelangganController->search();
     break;
 
+  // routes rental
   case 'rental_list':
     $rentalController->list();
     break;
@@ -127,7 +137,7 @@ switch ($action) {
     $rentalController->search();
     break;
 
-
+  // routes pengembalian
   case 'pengembalian_list':
     $pengembalianController->list();
     break;
@@ -144,36 +154,43 @@ switch ($action) {
     $pengembalianController->search();
     break;
 
+  // routes function
   case 'pelanggan_total_denda':
     $controller = new PelangganController($pelangganModel);
     $controller->totalDenda();
     break;
-
-
   case 'kendaraan_tersedia':
     $controller = new KendaraanController($kendaraanModel);
     $controller->kendaraanTersedia();
     break;
-
-  case 'sopir_tersedia':
-    $controller = new SopirController($sopirModel);
-    $controller->sopirTersedia();
-    break;
-  
-  case 'laporan_transaksi':
-    $controller = new LaporanTransaksiController($laporanTransaksiModel);
-    $controller->laporanTransaksi();
-    break;
-
-  case 'refresh_laporan':
-    $controller = new LaporanTransaksiController($laporanTransaksiModel);
-    $controller->refreshTransaksi();
   case 'kendaraan_ubah_status':
     $controller = new KendaraanController($kendaraanModel);
     $controller->ubah_status();
     break;
 
+  // routes view
+  case 'sopir_tersedia':
+    $controller = new SopirController($sopirModel);
+    $controller->sopirTersedia();
+    break;
+  case 'laporan_transaksi':
+    $controller = new LaporanController($laporanModel);
+    $controller->laporanTransaksi();
+    break;
+  case 'refresh_laporan':
+    $controller = new LaporanController($laporanModel);
+    $controller->refreshTransaksi();
+  case 'laporan_pendapatan':
+    $controller = new LaporanController($laporanModel);
+    $controller->laporanPendapatan();
+    break;
+  
+  // routes demo
+  case 'demo_transaction':
+    include 'views/demo_transaction.php';
+    break;
+
   default:
-    $TipeKendaraanController->list();
+    $dashboardController->index();
     break;
 }

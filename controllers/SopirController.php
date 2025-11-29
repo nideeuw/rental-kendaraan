@@ -10,7 +10,15 @@ class SopirController
 
     public function list(): void
     {
-        $sopir = $this->model->getAllSopir();
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+        $total = $this->model->getTotal();
+        $pagination = paginate($page, $total, $perPage);
+
+        $sopir = $this->model->getAllSopir($pagination['limit'], $pagination['offset']);
         include 'views/sopir/sopir_list.php';
     }
 
@@ -59,7 +67,7 @@ class SopirController
         }
 
         $sopir = $this->model->getSopirById($id);
-        $tipe_list = $this->model->getAllSopir();
+        // $tipe_list = $this->model->getAllSopir();
         include 'views/sopir/sopir_form.php';
     }
 
@@ -77,10 +85,22 @@ class SopirController
 
     public function search(): void
     {
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
-            $sopir = $this->model->searchSopir($_GET['keyword']);
+            // Ada keyword search
+            $searchKeyword = $_GET['keyword'];
+            $total = $this->model->getTotalSearch($searchKeyword);
+            $pagination = paginate($page, $total, $perPage);
+
+            $sopir = $this->model->searchSopir($searchKeyword, $pagination['limit'], $pagination['offset']);
         } else {
-            $sopir = $this->model->getAllSopir();
+            // Tidak ada keyword, redirect ke list
+            header("Location: index.php?action=sopir_list");
+            exit();
         }
 
         include 'views/sopir/sopir_list.php';
@@ -88,7 +108,29 @@ class SopirController
 
     public function sopirTersedia(): void
     {
-        $sopir = $this->model->getSopirTersedia();
+        require_once __DIR__ . '/../includes/pagination.php';
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+
+        // Ambil filter dari URL
+        $filters = [
+            'search' => isset($_GET['search']) ? trim($_GET['search']) : '',
+            'sort' => isset($_GET['sort']) ? $_GET['sort'] : 'nama_sopir',
+            'order' => isset($_GET['order']) ? $_GET['order'] : 'ASC'
+        ];
+
+        // Hitung pagination dengan filter
+        $total = $this->model->getTotalSopirTersedia($filters);
+        $pagination = paginate($page, $total, $perPage);
+
+        // Get data dengan filter
+        $sopir = $this->model->getSopirTersedia(
+            $pagination['limit'],
+            $pagination['offset'],
+            $filters
+        );
+
         include 'views/sopir/sopir_tersedia.php';
     }
 }
