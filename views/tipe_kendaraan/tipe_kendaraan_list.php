@@ -83,7 +83,7 @@ include __DIR__ . '/../../includes/header.php';
         // Build URL berdasarkan context (search atau list)
         if (isset($searchKeyword) && !empty($searchKeyword)) {
             // Kalau dari search
-            $url = 'index.php?action=kendaraan_search&keyword=' . urlencode($searchKeyword);
+            $url = 'index.php?action=tipe_kendaraan_search&keyword=' . urlencode($searchKeyword);
         } else {
             // Kalau dari list biasa
             $url = 'index.php?action=tipe_list';
