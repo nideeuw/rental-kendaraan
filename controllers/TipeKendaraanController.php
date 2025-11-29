@@ -59,7 +59,6 @@ class TipeKendaraanController
         }
 
         $tipe = $this->model->getTipeById($id);
-        $tipe_list = $this->model->getAllTipe();
         include 'views/tipe_kendaraan/tipe_kendaraan_form.php';
     }
 
