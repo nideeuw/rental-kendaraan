@@ -33,7 +33,7 @@ include __DIR__ . '/../../includes/header.php';
         </form>
     </div>
 
-    <?php if (!empty($pelanggan)): ?>
+    <?php if ($pelanggan->rowCount() > 0): ?>
         <div class="table-container">
             <table class="data-table">
                 <thead>
@@ -48,7 +48,7 @@ include __DIR__ . '/../../includes/header.php';
                 </thead>
                 <tbody>
                     <?php $no = $pagination['from']; ?>
-                    <?php foreach ($pelanggan as $row): ?>
+                    <?php while ($row = $pelanggan->fetch(PDO::FETCH_ASSOC)): ?>
                         <tr>
                             <td><?= $no++; ?></td>
                             <td><?= htmlspecialchars($row['nama_pelanggan']); ?></td>
@@ -70,7 +70,7 @@ include __DIR__ . '/../../includes/header.php';
                                 </div>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php endwhile; ?>
                 </tbody>
             </table>
         </div>

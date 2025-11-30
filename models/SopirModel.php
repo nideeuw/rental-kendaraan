@@ -104,26 +104,25 @@ class SopirModel
     }
 
     public function getTotalSearch($keyword)
-{
-    $query = "SELECT COUNT(*) as total
+    {
+        $query = "SELECT COUNT(*) as total
               FROM " . $this->table_name . "
               WHERE nama_sopir LIKE :keyword
               OR no_sim LIKE :keyword
               OR status_sopir LIKE :keyword";
 
-    $stmt = $this->conn->prepare($query);
-    $kw = "%{$keyword}%";
-    $stmt->bindParam(":keyword", $kw);
-    $stmt->execute();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    return (int)$result['total'];
-}
+        $stmt = $this->conn->prepare($query);
+        $kw = "%{$keyword}%";
+        $stmt->bindParam(":keyword", $kw);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // MEMANGGIL VIEW SOPIR TERSEDIA
+        return (int)$result['total'];
+    }
+
     public function getSopirTersedia($limit, $offset, $filters = [])
     {
-        // Gunakan subquery untuk filtering
+        // subquery untuk filtering
         $query = "SELECT * FROM (
                     SELECT * FROM vw_sopirtersedia
                   ) AS hasil";
@@ -131,7 +130,7 @@ class SopirModel
         $params = [];
         $conditions = [];
 
-        // SEARCH: Cari di nama sopir dan no SIM
+        // SEARCH
         if (!empty($filters['search'])) {
             $conditions[] = "(
                 nama_sopir ILIKE :search OR 

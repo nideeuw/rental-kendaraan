@@ -242,46 +242,6 @@ class RentalModel
     }
 
     // SEARCH
-    // public function searchRental($keyword)
-    // {
-    //     $query = "SELECT 
-    //             r.id_rental,
-    //             r.tanggal_sewa,
-    //             r.tanggal_kembali,
-    //             r.total_biaya,
-    //             r.status_rental,
-    //             k.plat_nomor,
-    //             k.merk,
-    //             k.warna,
-    //             t.nama_tipe,
-    //             s.nama_sopir,
-    //             p.nama_pelanggan
-    //           FROM " . $this->table_name . " r
-    //           LEFT JOIN kendaraan k ON r.id_kendaraan = k.id_kendaraan
-    //           LEFT JOIN tipe_kendaraan t ON k.id_tipe = t.id_tipe
-    //           LEFT JOIN sopir s ON r.id_sopir = s.id_sopir
-    //           LEFT JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan
-    //           WHERE k.plat_nomor ILIKE :wild
-    //              OR k.merk ILIKE :wild
-    //              OR k.warna ILIKE :wild
-    //              OR t.nama_tipe ILIKE :wild
-    //              OR s.nama_sopir ILIKE :wild
-    //              OR p.searchable @@ plainto_tsquery('simple', :tsquery)
-    //           ORDER BY r.id_rental DESC";
-
-    //     $stmt = $this->conn->prepare($query);
-
-    //     $wild = "%{$keyword}%";
-    //     $tsquery = $keyword; // tanpa wildcard untuk tsquery
-
-    //     $stmt->bindParam(":wild", $wild);
-    //     $stmt->bindParam(":tsquery", $tsquery);
-
-    //     $stmt->execute();
-    //     return $stmt;
-    // }
-
-    // SEARCH
     public function searchRental($keyword, $limit, $offset)
     {
         $query = "SELECT 
@@ -323,7 +283,6 @@ class RentalModel
         $stmt->execute();
         return $stmt;
     }
-
 
     public function getTotalSearch($keyword)
     {
