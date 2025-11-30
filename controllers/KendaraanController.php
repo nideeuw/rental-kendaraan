@@ -26,7 +26,7 @@ class KendaraanController
             ? 'ASC'
             : 'DESC';
 
-        $valid_status = ['tersedia', 'disewa', 'maintenance'];
+        $valid_status = ['Tersedia', 'Disewa', 'Perawatan'];
         $status = isset($_GET['status']) && in_array($_GET['status'], $valid_status)
             ? $_GET['status']
             : '';
@@ -63,25 +63,9 @@ class KendaraanController
                 $allErrors[] = ["Warna maksimal 30 karakter"];
             }
 
-            $allErrors[] = ValidationHelper::validateEnum(
-                $_POST['status'] ?? '',
-                ['Tersedia', 'Disewa', 'Perawatan'],
-                'Status'
-            );
-
-            $allErrors[] = ValidationHelper::validatePositiveNumber(
-                $_POST['kapasitas'] ?? '',
-                'Kapasitas',
-                1,
-                50
-            );
-
-            $allErrors[] = ValidationHelper::validatePositiveNumber(
-                $_POST['tarif_harian'] ?? '',
-                'Tarif harian',
-                0
-            );
-
+            $allErrors[] = ValidationHelper::validateEnum($_POST['status'] ?? '', ['Tersedia', 'Disewa', 'Perawatan'], 'Status');
+            $allErrors[] = ValidationHelper::validatePositiveNumber($_POST['kapasitas'] ?? '', 'Kapasitas', 1, 50);
+            $allErrors[] = ValidationHelper::validatePositiveNumber($_POST['tarif_harian'] ?? '', 'Tarif harian', 0);
             $allErrors[] = ValidationHelper::validateId($_POST['id_tipe'] ?? '', 'Tipe kendaraan');
 
             $error = ValidationHelper::formatErrors($allErrors);
@@ -134,12 +118,7 @@ class KendaraanController
                 $allErrors[] = ["Warna maksimal 30 karakter"];
             }
 
-            $allErrors[] = ValidationHelper::validateEnum(
-                $_POST['status'] ?? '',
-                ['tersedia', 'disewa', 'maintenance'],
-                'Status'
-            );
-
+            $allErrors[] = ValidationHelper::validateEnum($_POST['status'] ?? '', ['Tersedia', 'Disewa', 'Perawatan'], 'Status');
             $allErrors[] = ValidationHelper::validatePositiveNumber($_POST['kapasitas'] ?? '', 'Kapasitas', 1, 50);
             $allErrors[] = ValidationHelper::validatePositiveNumber($_POST['tarif_harian'] ?? '', 'Tarif harian', 0);
             $allErrors[] = ValidationHelper::validateId($_POST['id_tipe'] ?? '', 'Tipe kendaraan');

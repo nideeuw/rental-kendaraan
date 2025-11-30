@@ -19,19 +19,7 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
         <h2>📊 Laporan Pendapatan Per Tahun</h2>
         <a href="index.php?action=dashboard" class="btn btn-secondary">← Kembali ke Dashboard</a>
     </div>
-
-    <?php if (isset($_GET['success'])): ?>
-        <div class="alert alert-success">✅ <?= htmlspecialchars($_GET['success']); ?></div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['error'])): ?>
-        <div class="alert alert-error">⚠️ <?= htmlspecialchars($_GET['error']); ?></div>
-    <?php endif; ?>
-
-    <?php if (isset($error)): ?>
-        <div class="alert alert-error">⚠️ Error: <?= htmlspecialchars($error); ?></div>
-    <?php endif; ?>
-
+    
     <!-- Filter -->
     <div class="search-filter-box">
         <form method="GET" action="index.php" class="filter-form" id="filterForm">

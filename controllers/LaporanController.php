@@ -30,7 +30,7 @@ class LaporanController
             ? $_GET['status']
             : '';
 
-        $valid_kondisi = ['Baik', 'Rusak', 'rusak berat'];
+        $valid_kondisi = ['Baik', 'Rusak'];
         $kondisi = isset($_GET['kondisi']) && in_array($_GET['kondisi'], $valid_kondisi)
             ? $_GET['kondisi']
             : '';
