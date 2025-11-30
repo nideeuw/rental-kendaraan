@@ -19,11 +19,11 @@ class DashboardModel
             $stats['total_kendaraan'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
             // Kendaraan Tersedia
-            $stmt = $this->conn->query("SELECT COUNT(*) as total FROM kendaraan WHERE LOWER(status) = 'tersedia'");
+            $stmt = $this->conn->query("SELECT COUNT(*) as total FROM kendaraan WHERE LOWER(status) = 'Tersedia'");
             $stats['kendaraan_tersedia'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
             // Kendaraan Disewa
-            $stmt = $this->conn->query("SELECT COUNT(*) as total FROM kendaraan WHERE LOWER(status) = 'disewa'");
+            $stmt = $this->conn->query("SELECT COUNT(*) as total FROM kendaraan WHERE LOWER(status) = 'Disewa'");
             $stats['kendaraan_disewa'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
             // Total Sopir
@@ -31,7 +31,7 @@ class DashboardModel
             $stats['total_sopir'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
             // Sopir Tersedia
-            $stmt = $this->conn->query("SELECT COUNT(*) as total FROM sopir WHERE LOWER(status_sopir) = 'tersedia'");
+            $stmt = $this->conn->query("SELECT COUNT(*) as total FROM sopir WHERE LOWER(status_sopir) = 'Tersedia'");
             $stats['sopir_tersedia'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
             // Total Pelanggan

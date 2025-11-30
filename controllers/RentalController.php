@@ -25,8 +25,6 @@ class RentalController
         include 'views/rental/rental_list.php';
     }
 
-
-
     public function create(): void
     {
         if ($_POST) {

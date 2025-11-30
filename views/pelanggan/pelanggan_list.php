@@ -60,13 +60,10 @@ include __DIR__ . '/../../includes/header.php';
                                     <a
                                         href="index.php?action=pelanggan_edit&id=<?= $row['id_pelanggan']; ?>"
                                         class="btn btn-edit">Edit</a>
-
                                     <a
                                         href="index.php?action=pelanggan_delete&id=<?= $row['id_pelanggan']; ?>"
                                         class="btn btn-delete"
                                         onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
-
-
                                 </div>
                             </td>
                         </tr>
