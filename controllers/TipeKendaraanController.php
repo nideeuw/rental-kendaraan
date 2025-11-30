@@ -42,11 +42,15 @@ class TipeKendaraanController
                 'nama_tipe' => ValidationHelper::sanitizeString($_POST['nama_tipe']),
             ];
 
-            if ($this->model->createTipe($data)) {
-                header("Location: index.php?action=tipe_kendaraan_list&message=created");
+            $result = $this->model->createTipe($data);
+
+            if ($result === true) {
+                header("Location: index.php?action=tipe_list&message=created");
                 exit();
+            } elseif ($result === 'duplicate') {
+                $error = "Nama tipe kendaraan sudah ada. Silakan gunakan nama lain.";
             } else {
-                $error = "Gagal menambah tipe kendaraan";
+                $error = "Gagal menambahkan data tipe kendaraan.";
             }
         }
 

@@ -26,6 +26,16 @@ class TipeKendaraanModel
     // Tambah data
     public function createTipe($data)
     {
+        // Cek apakah nama sudah ada
+        $check = $this->conn->prepare("SELECT COUNT(*) FROM tipe_kendaraan WHERE LOWER(nama_tipe) = LOWER(:nama_tipe)");
+        $check->bindParam(":nama_tipe", $data['nama_tipe']);
+        $check->execute();
+        $exists = $check->fetchColumn();
+
+        if ($exists > 0) {
+            return 'duplicate'; 
+        }
+
         $query = "INSERT INTO tipe_kendaraan (nama_tipe) VALUES (:nama_tipe)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":nama_tipe", $data['nama_tipe']);
@@ -93,7 +103,7 @@ class TipeKendaraanModel
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         return (int)$result['total'];
     }
 }
