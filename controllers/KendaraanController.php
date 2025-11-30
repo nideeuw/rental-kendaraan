@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../includes/validation_helper.php';
 class KendaraanController
 {
     private $model;
@@ -16,12 +17,25 @@ class KendaraanController
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
-        // Ambil filter dari URL
+        $allowed_sort = ['id_kendaraan', 'plat_nomor', 'merk', 'status', 'tarif_harian'];
+        $sort = isset($_GET['sort']) && in_array($_GET['sort'], $allowed_sort)
+            ? $_GET['sort']
+            : 'id_kendaraan';
+
+        $order = isset($_GET['order']) && strtoupper($_GET['order']) === 'ASC'
+            ? 'ASC'
+            : 'DESC';
+
+        $valid_status = ['tersedia', 'disewa', 'maintenance'];
+        $status = isset($_GET['status']) && in_array($_GET['status'], $valid_status)
+            ? $_GET['status']
+            : '';
+
         $filters = [
-            'search' => isset($_GET['search']) ? trim($_GET['search']) : '',
-            'status' => isset($_GET['status']) ? $_GET['status'] : '',
-            'sort' => isset($_GET['sort']) ? $_GET['sort'] : 'id_kendaraan',
-            'order' => isset($_GET['order']) ? $_GET['order'] : 'DESC'
+            'search' => isset($_GET['search']) ? ValidationHelper::sanitizeString($_GET['search']) : '',
+            'status' => $status,
+            'sort' => $sort,
+            'order' => $order
         ];
 
         $total = $this->model->getTotal($filters);
@@ -35,14 +49,57 @@ class KendaraanController
     {
         if ($_POST) {
 
+            $allErrors = [];
+
+            $allErrors[] = ValidationHelper::validatePlatNomor($_POST['plat_nomor'] ?? '');
+            $allErrors[] = ValidationHelper::validateName($_POST['merk'] ?? '', 'Merk', 50);
+
+            $warna = $_POST['warna'] ?? '';
+            if (empty($warna)) {
+                $allErrors[] = ["Warna harus diisi"];
+            } elseif (!preg_match('/^[a-zA-Z\s]+$/', $warna)) {
+                $allErrors[] = ["Warna hanya boleh huruf dan spasi"];
+            } elseif (strlen($warna) > 30) {
+                $allErrors[] = ["Warna maksimal 30 karakter"];
+            }
+
+            $allErrors[] = ValidationHelper::validateEnum(
+                $_POST['status'] ?? '',
+                ['Tersedia', 'Disewa', 'Perawatan'],
+                'Status'
+            );
+
+            $allErrors[] = ValidationHelper::validatePositiveNumber(
+                $_POST['kapasitas'] ?? '',
+                'Kapasitas',
+                1,
+                50
+            );
+
+            $allErrors[] = ValidationHelper::validatePositiveNumber(
+                $_POST['tarif_harian'] ?? '',
+                'Tarif harian',
+                0
+            );
+
+            $allErrors[] = ValidationHelper::validateId($_POST['id_tipe'] ?? '', 'Tipe kendaraan');
+
+            $error = ValidationHelper::formatErrors($allErrors);
+
+            if (!empty($error)) {
+                $tipe_list = $this->model->getAllTipe();
+                include 'views/kendaraan/kendaraan_form.php';
+                return;
+            }
+
             $data = [
-                'plat_nomor'     => $_POST['plat_nomor'],
-                'merk'           => $_POST['merk'],
-                'warna'          => $_POST['warna'],
+                'plat_nomor'     => strtoupper(ValidationHelper::sanitizeString($_POST['plat_nomor'])),
+                'merk'           => ValidationHelper::sanitizeString($_POST['merk']),
+                'warna'          => ValidationHelper::sanitizeString($_POST['warna']),
                 'status'         => $_POST['status'],
-                'kapasitas'      => $_POST['kapasitas'],
-                'tarif_harian'   => $_POST['tarif_harian'],
-                'id_tipe'        => $_POST['id_tipe']
+                'kapasitas'      => (int)$_POST['kapasitas'],
+                'tarif_harian'   => (float)$_POST['tarif_harian'],
+                'id_tipe'        => (int)$_POST['id_tipe']
             ];
 
             if ($this->model->createKendaraan($data)) {
@@ -63,14 +120,47 @@ class KendaraanController
 
         if ($_POST) {
 
+            $allErrors = [];
+
+            $allErrors[] = ValidationHelper::validatePlatNomor($_POST['plat_nomor'] ?? '');
+            $allErrors[] = ValidationHelper::validateName($_POST['merk'] ?? '', 'Merk', 50);
+
+            $warna = $_POST['warna'] ?? '';
+            if (empty($warna)) {
+                $allErrors[] = ["Warna harus diisi"];
+            } elseif (!preg_match('/^[a-zA-Z\s]+$/', $warna)) {
+                $allErrors[] = ["Warna hanya boleh huruf dan spasi"];
+            } elseif (strlen($warna) > 30) {
+                $allErrors[] = ["Warna maksimal 30 karakter"];
+            }
+
+            $allErrors[] = ValidationHelper::validateEnum(
+                $_POST['status'] ?? '',
+                ['tersedia', 'disewa', 'maintenance'],
+                'Status'
+            );
+
+            $allErrors[] = ValidationHelper::validatePositiveNumber($_POST['kapasitas'] ?? '', 'Kapasitas', 1, 50);
+            $allErrors[] = ValidationHelper::validatePositiveNumber($_POST['tarif_harian'] ?? '', 'Tarif harian', 0);
+            $allErrors[] = ValidationHelper::validateId($_POST['id_tipe'] ?? '', 'Tipe kendaraan');
+
+            $error = ValidationHelper::formatErrors($allErrors);
+
+            if (!empty($error)) {
+                $kendaraan = $this->model->getKendaraanById($id);
+                $tipe_list = $this->model->getAllTipe();
+                include 'views/kendaraan/kendaraan_form.php';
+                return;
+            }
+
             $data = [
-                'plat_nomor'     => $_POST['plat_nomor'],
-                'merk'           => $_POST['merk'],
-                'warna'          => $_POST['warna'],
+                'plat_nomor'     => strtoupper(ValidationHelper::sanitizeString($_POST['plat_nomor'])),
+                'merk'           => ValidationHelper::sanitizeString($_POST['merk']),
+                'warna'          => ValidationHelper::sanitizeString($_POST['warna']),
                 'status'         => $_POST['status'],
-                'kapasitas'      => $_POST['kapasitas'],
-                'tarif_harian'   => $_POST['tarif_harian'],
-                'id_tipe'        => $_POST['id_tipe']
+                'kapasitas'      => (int)$_POST['kapasitas'],
+                'tarif_harian'   => (float)$_POST['tarif_harian'],
+                'id_tipe'        => (int)$_POST['id_tipe']
             ];
 
             if ($this->model->updateKendaraan($id, $data)) {
@@ -107,8 +197,7 @@ class KendaraanController
 
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
             // Ada keyword search
-            $searchKeyword = $_GET['keyword'];
-
+            $searchKeyword = ValidationHelper::sanitizeString($_GET['keyword']);
             $total = $this->model->getTotalSearch($searchKeyword);
             $pagination = paginate($page, $total, $perPage);
 
@@ -129,12 +218,20 @@ class KendaraanController
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
 
-        // Ambil filter dari URL
+        $allowed_sort = ['id_kendaraan', 'plat_nomor', 'merk', 'tarif_harian'];
+        $sort = isset($_GET['sort']) && in_array($_GET['sort'], $allowed_sort)
+            ? $_GET['sort']
+            : 'id_kendaraan';
+
+        $order = isset($_GET['order']) && strtoupper($_GET['order']) === 'ASC'
+            ? 'ASC'
+            : 'DESC';
+
         $filters = [
-            'search' => isset($_GET['search']) ? trim($_GET['search']) : '',
-            'status' => isset($_GET['status']) ? $_GET['status'] : '',
-            'sort' => isset($_GET['sort']) ? $_GET['sort'] : 'id_kendaraan',
-            'order' => isset($_GET['order']) ? $_GET['order'] : 'DESC'
+            'search' => isset($_GET['search']) ? ValidationHelper::sanitizeString($_GET['search']) : '',
+            'status' => 'Tersedia',
+            'sort' => $sort,
+            'order' => $order
         ];
 
         // Hitung pagination
@@ -147,6 +244,25 @@ class KendaraanController
 
     public function ubah_status()
     {
+        $allErrors = [];
+        $allErrors[] = ValidationHelper::validateId($_GET['id'] ?? '', 'ID Kendaraan');
+        $allErrors[] = ValidationHelper::validateEnum(
+            $_GET['status'] ?? '', 
+            ['Tersedia', 'Disewa', 'Perawatan'], 
+            'Status'
+        );
+
+        $error = ValidationHelper::formatErrors($allErrors);
+        
+        if (!empty($error)) {
+            $_SESSION['notif'] = [
+                "type" => "error",
+                "message" => $error
+            ];
+            header("Location: index.php?action=kendaraan_list");
+            exit();
+        }
+
         $id = $_GET['id'];
         $status_baru = $_GET['status'];
 

@@ -3,9 +3,9 @@ $page_title = "Dashboard";
 include __DIR__ . '/../includes/header.php';
 ?>
 
-<?php if (isset($error)): ?>
+<?php if (isset($stats['error'])): ?>
     <div class="alert alert-error">
-        ⚠️ Error: <?= htmlspecialchars($error) ?>
+        ⚠️ Error: <?= htmlspecialchars($stats['error']) ?>
     </div>
 <?php endif; ?>
 
@@ -15,25 +15,25 @@ include __DIR__ . '/../includes/header.php';
         <div class="stat-card stat-primary">
             <div class="stat-icon">🚗</div>
             <div class="stat-content">
-                <h3><?= number_format($total_kendaraan ?? 0); ?></h3>
+                <h3><?= number_format($stats['total_kendaraan'] ?? 0); ?></h3>
                 <p>Total Kendaraan</p>
-                <small><?= $kendaraan_tersedia ?? 0; ?> tersedia | <?= $kendaraan_disewa ?? 0; ?> disewa</small>
+                <small><?= $stats['kendaraan_tersedia'] ?? 0; ?> tersedia | <?= $stats['kendaraan_disewa'] ?? 0; ?> disewa</small>
             </div>
         </div>
 
         <div class="stat-card stat-success">
             <div class="stat-icon">👨‍✈️</div>
             <div class="stat-content">
-                <h3><?= number_format($total_sopir ?? 0); ?></h3>
+                <h3><?= number_format($stats['total_sopir'] ?? 0); ?></h3>
                 <p>Total Sopir</p>
-                <small><?= $sopir_tersedia ?? 0; ?> sopir tersedia</small>
+                <small><?= $stats['sopir_tersedia'] ?? 0; ?> sopir tersedia</small>
             </div>
         </div>
 
         <div class="stat-card stat-info">
             <div class="stat-icon">👥</div>
             <div class="stat-content">
-                <h3><?= number_format($total_pelanggan ?? 0); ?></h3>
+                <h3><?= number_format($stats['total_pelanggan'] ?? 0); ?></h3>
                 <p>Total Pelanggan</p>
                 <small>Pelanggan terdaftar</small>
             </div>
@@ -42,7 +42,7 @@ include __DIR__ . '/../includes/header.php';
         <div class="stat-card stat-warning">
             <div class="stat-icon">📋</div>
             <div class="stat-content">
-                <h3><?= number_format($rental_aktif ?? 0); ?></h3>
+                <h3><?= number_format($stats['rental_aktif'] ?? 0); ?></h3>
                 <p>Rental Aktif</p>
                 <small>Sedang berlangsung</small>
             </div>
@@ -51,7 +51,7 @@ include __DIR__ . '/../includes/header.php';
         <div class="stat-card stat-revenue">
             <div class="stat-icon">💰</div>
             <div class="stat-content">
-                <h3>Rp <?= number_format($total_pendapatan ?? 0, 0, ',', '.'); ?></h3>
+                <h3>Rp <?= number_format($stats['total_pendapatan'] ?? 0, 0, ',', '.'); ?></h3>
                 <p>Pendapatan Bulan Ini</p>
                 <small><?= date('F Y'); ?></small>
             </div>

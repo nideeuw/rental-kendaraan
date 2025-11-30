@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../includes/validation_helper.php';
+
 class PengembalianController
 {
     private $model;
@@ -25,11 +27,34 @@ class PengembalianController
     public function create(): void
     {
         if ($_POST) {
+            $allErrors = [];
+
+            $allErrors[] = ValidationHelper::validateDate($_POST['tanggal_pengembalian'] ?? '', 'Tanggal pengembalian');
+            $allErrors[] = ValidationHelper::validateEnum($_POST['kondisi_kendaraan'] ?? '', ['Baik', 'Rusak'], 'Kondisi kendaraan');
+
+            // Validasi denda (bisa 0)
+            $denda = $_POST['denda'] ?? '';
+            if (!isset($_POST['denda']) || $_POST['denda'] === '') {
+                $allErrors[] = ["Denda harus diisi (minimal 0)"];
+            } elseif (!is_numeric($denda) || $denda < 0) {
+                $allErrors[] = ["Denda harus angka positif atau 0"];
+            }
+
+            $allErrors[] = ValidationHelper::validateId($_POST['id_rental'] ?? '', 'Rental');
+
+            $error = ValidationHelper::formatErrors($allErrors);
+
+            if (!empty($error)) {
+                $rental_list = $this->model->getAllRental();
+                include 'views/pengembalian/pengembalian_form.php';
+                return;
+            }
+
             $data = [
                 'tanggal_pengembalian' => $_POST['tanggal_pengembalian'],
                 'kondisi_kendaraan'   => $_POST['kondisi_kendaraan'],
-                'denda'               => $_POST['denda'],
-                'id_rental'           => $_POST['id_rental']
+                'denda'               => (float)$_POST['denda'],
+                'id_rental'           => (int)$_POST['id_rental']
             ];
 
             if ($this->model->createPengembalian($data)) {
@@ -49,11 +74,34 @@ class PengembalianController
     {
         $id = $_GET['id'];
         if ($_POST) {
+            $allErrors = [];
+
+            $allErrors[] = ValidationHelper::validateDate($_POST['tanggal_pengembalian'] ?? '', 'Tanggal pengembalian');
+            $allErrors[] = ValidationHelper::validateEnum($_POST['kondisi_kendaraan'] ?? '', ['Baik', 'Rusak'], 'Kondisi kendaraan');
+
+            $denda = $_POST['denda'] ?? '';
+            if (!isset($_POST['denda']) || $_POST['denda'] === '') {
+                $allErrors[] = ["Denda harus diisi (minimal 0)"];
+            } elseif (!is_numeric($denda) || $denda < 0) {
+                $allErrors[] = ["Denda harus angka positif atau 0"];
+            }
+
+            $allErrors[] = ValidationHelper::validateId($_POST['id_rental'] ?? '', 'Rental');
+
+            $error = ValidationHelper::formatErrors($allErrors);
+
+            if (!empty($error)) {
+                $pengembalian = $this->model->getPengembalianById($id);
+                $rental_list = $this->model->getAllRental();
+                include 'views/pengembalian/pengembalian_form.php';
+                return;
+            }
+
             $data = [
                 'tanggal_pengembalian' => $_POST['tanggal_pengembalian'],
                 'kondisi_kendaraan'   => $_POST['kondisi_kendaraan'],
-                'denda'               => $_POST['denda'],
-                'id_rental'           => $_POST['id_rental']
+                'denda'               => (float)$_POST['denda'],
+                'id_rental'           => (int)$_POST['id_rental']
             ];
 
             if ($this->model->updatePengembalian($id, $data)) {
@@ -91,7 +139,7 @@ class PengembalianController
 
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
             // Ada keyword search
-            $searchKeyword = $_GET['keyword'];
+            $searchKeyword = ValidationHelper::sanitizeString($_GET['keyword']);
             $total = $this->model->getTotalSearch($searchKeyword);
             $pagination = paginate($page, $total, $perPage);
 
@@ -112,6 +160,16 @@ class PengembalianController
 
         if (!isset($_GET['id_rental'])) {
             echo json_encode(['error' => 'ID Rental tidak ditemukan']);
+            exit();
+        }
+
+        $allErrors = [];
+        $allErrors[] = ValidationHelper::validateId($_GET['id_rental'], 'ID Rental');
+
+        $error = ValidationHelper::formatErrors($allErrors);
+
+        if (!empty($error)) {
+            echo json_encode(['error' => $error]);
             exit();
         }
 

@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../includes/validation_helper.php';
+
 class RentalController
 {
     private $model;
@@ -29,13 +31,41 @@ class RentalController
     {
         if ($_POST) {
 
+            $allErrors = [];
+
+            $allErrors[] = ValidationHelper::validateDate($_POST['tanggal_sewa'] ?? '', 'Tanggal sewa');
+            $allErrors[] = ValidationHelper::validateDate($_POST['tanggal_kembali'] ?? '', 'Tanggal kembali');
+
+            if (!empty($_POST['tanggal_sewa']) && !empty($_POST['tanggal_kembali'])) {
+                $allErrors[] = ValidationHelper::validateDateRange($_POST['tanggal_sewa'], $_POST['tanggal_kembali'], 'Tanggal sewa', 'Tanggal kembali');
+            }
+
+            $allErrors[] = ValidationHelper::validatePositiveNumber($_POST['total_biaya'] ?? '', 'Total biaya', 0);
+            $allErrors[] = ValidationHelper::validateId($_POST['id_kendaraan'] ?? '', 'Kendaraan');
+            $allErrors[] = ValidationHelper::validateId($_POST['id_pelanggan'] ?? '', 'Pelanggan');
+
+            // Validasi ID sopir (optional)
+            if (!empty($_POST['id_sopir'])) {
+                $allErrors[] = ValidationHelper::validateId($_POST['id_sopir'], 'Sopir', false);
+            }
+
+            $error = ValidationHelper::formatErrors($allErrors);
+
+            if (!empty($error)) {
+                $kendaraan_list = $this->model->getAllKendaraan();
+                $sopir_list      = $this->model->getAllSopir();
+                $pelanggan_list  = $this->model->getAllPelanggan();
+                include 'views/rental/rental_form.php';
+                return;
+            }
+
             $data = [
                 'tanggal_sewa'    => $_POST['tanggal_sewa'],
                 'tanggal_kembali' => $_POST['tanggal_kembali'],
-                'total_biaya'     => $_POST['total_biaya'],
-                'id_kendaraan'    => $_POST['id_kendaraan'],
-                'id_sopir'        => $_POST['id_sopir'],
-                'id_pelanggan'    => $_POST['id_pelanggan']
+                'total_biaya'     => (float)$_POST['total_biaya'],
+                'id_kendaraan'    => (int)$_POST['id_kendaraan'],
+                'id_sopir'        => !empty($_POST['id_sopir']) ? (int)$_POST['id_sopir'] : null,
+                'id_pelanggan'    => (int)$_POST['id_pelanggan']
             ];
 
             $result = $this->model->createRentalWithTransaction($data);
@@ -76,14 +106,42 @@ class RentalController
         $rental = $this->model->getRentalById($id);
 
         if ($_POST) {
+            $allErrors = [];
+
+            $allErrors[] = ValidationHelper::validateDate($_POST['tanggal_sewa'] ?? '', 'Tanggal sewa');
+            $allErrors[] = ValidationHelper::validateDate($_POST['tanggal_kembali'] ?? '', 'Tanggal kembali');
+
+            if (!empty($_POST['tanggal_sewa']) && !empty($_POST['tanggal_kembali'])) {
+                $allErrors[] = ValidationHelper::validateDateRange($_POST['tanggal_sewa'], $_POST['tanggal_kembali']);
+            }
+
+            $allErrors[] = ValidationHelper::validatePositiveNumber($_POST['total_biaya'] ?? '', 'Total biaya', 0);
+            $allErrors[] = ValidationHelper::validateEnum($_POST['status_rental'] ?? '', ['aktif', 'selesai', 'dibatalkan'], 'Status rental');
+            $allErrors[] = ValidationHelper::validateId($_POST['id_kendaraan'] ?? '', 'Kendaraan');
+            $allErrors[] = ValidationHelper::validateId($_POST['id_pelanggan'] ?? '', 'Pelanggan');
+
+            if (!empty($_POST['id_sopir'])) {
+                $allErrors[] = ValidationHelper::validateId($_POST['id_sopir'], 'Sopir', false);
+            }
+
+            $error = ValidationHelper::formatErrors($allErrors);
+
+            if (!empty($error)) {
+                $kendaraan_list = $this->model->getAllKendaraan();
+                $sopir_list      = $this->model->getAllSopir();
+                $pelanggan_list  = $this->model->getAllPelanggan();
+                include 'views/rental/rental_form.php';
+                return;
+            }
+
             $data = [
                 'tanggal_sewa'    => $_POST['tanggal_sewa'],
                 'tanggal_kembali' => $_POST['tanggal_kembali'],
-                'total_biaya'     => $_POST['total_biaya'],
+                'total_biaya'     => (float)$_POST['total_biaya'],
                 'status_rental'   => $_POST['status_rental'],
-                'id_kendaraan'    => $_POST['id_kendaraan'],
-                'id_sopir'        => $_POST['id_sopir'],
-                'id_pelanggan'    => $_POST['id_pelanggan']
+                'id_kendaraan'    => (int)$_POST['id_kendaraan'],
+                'id_sopir'        => !empty($_POST['id_sopir']) ? (int)$_POST['id_sopir'] : null,
+                'id_pelanggan'    => (int)$_POST['id_pelanggan']
             ];
 
             if ($this->model->updateRental($id, $data)) {
@@ -122,7 +180,7 @@ class RentalController
 
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
             // Ada keyword search
-            $searchKeyword = $_GET['keyword'];
+            $searchKeyword = ValidationHelper::sanitizeString($_GET['keyword']);
             $total = $this->model->getTotalSearch($searchKeyword);
             $pagination = paginate($page, $total, $perPage);
 

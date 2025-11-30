@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../includes/validation_helper.php';
+
 class PelangganController
 {
   private $model;
@@ -28,13 +30,26 @@ class PelangganController
   {
     if ($_POST) {
 
-      $data = [
-        'nama_pelanggan' => $_POST['nama_pelanggan'],
-        'alamat'         => $_POST['alamat'],
-        'no_telepon'     => $_POST['no_telepon'],
-        'email'          => $_POST['email']
-      ];
+      $allErrors = [];
 
+      $allErrors[] = ValidationHelper::validateName($_POST['nama_pelanggan'] ?? '', 'Nama pelanggan', 100);
+      $allErrors[] = ValidationHelper::validateText($_POST['alamat'] ?? '', 'Alamat', true, 500);
+      $allErrors[] = ValidationHelper::validatePhone($_POST['no_telepon'] ?? '');
+      $allErrors[] = ValidationHelper::validateEmail($_POST['email'] ?? '');
+
+      $error = ValidationHelper::formatErrors($allErrors);
+
+      if (!empty($error)) {
+        include 'views/pelanggan/pelanggan_form.php';
+        return;
+      }
+
+      $data = [
+        'nama_pelanggan' => ValidationHelper::sanitizeString($_POST['nama_pelanggan']),
+        'alamat'         => ValidationHelper::sanitizeString($_POST['alamat']),
+        'no_telepon'     => trim($_POST['no_telepon']),
+        'email'          => ValidationHelper::sanitizeEmail($_POST['email'])
+      ];
 
       if ($this->model->createPelanggan($data)) {
         header("Location: index.php?action=pelanggan_list&message=created");
@@ -54,11 +69,25 @@ class PelangganController
 
     if ($_POST) {
 
+      $allErrors = [];
+
+      $allErrors[] = ValidationHelper::validateName($_POST['nama_pelanggan'] ?? '', 'Nama pelanggan', 100);
+      $allErrors[] = ValidationHelper::validateText($_POST['alamat'] ?? '', 'Alamat', true, 500);
+      $allErrors[] = ValidationHelper::validatePhone($_POST['no_telepon'] ?? '');
+      $allErrors[] = ValidationHelper::validateEmail($_POST['email'] ?? '');
+
+      $error = ValidationHelper::formatErrors($allErrors);
+
+      if (!empty($error)) {
+        include 'views/pelanggan/pelanggan_form.php';
+        return;
+      }
+
       $data = [
-        'nama_pelanggan' => $_POST['nama_pelanggan'],
-        'alamat'         => $_POST['alamat'],
-        'no_telepon'     => $_POST['no_telepon'],
-        'email'          => $_POST['email']
+        'nama_pelanggan' => ValidationHelper::sanitizeString($_POST['nama_pelanggan']),
+        'alamat'         => ValidationHelper::sanitizeString($_POST['alamat']),
+        'no_telepon'     => trim($_POST['no_telepon']),
+        'email'          => ValidationHelper::sanitizeEmail($_POST['email'])
       ];
 
       if ($this->model->updatePelanggan($id, $data)) {
@@ -95,7 +124,7 @@ class PelangganController
 
     if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
       // Ada keyword search
-      $searchKeyword = $_GET['keyword'];
+      $searchKeyword = ValidationHelper::sanitizeString($_GET['keyword']);
       $total = $this->model->getTotalSearch($searchKeyword);
       $pagination = paginate($page, $total, $perPage);
 
@@ -113,6 +142,15 @@ class PelangganController
   public function totalDenda(): void
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $allErrors = [];
+      $allErrors[] = ValidationHelper::validateId($_POST['id_pelanggan'] ?? '', 'ID Pelanggan');
+
+      $error = ValidationHelper::formatErrors($allErrors);
+
+      if (!empty($error)) {
+        include 'views/pelanggan/total_denda.php';
+        return;
+      }
 
       $id = $_POST['id_pelanggan'];
 

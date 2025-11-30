@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../includes/validation_helper.php';
 class TipeKendaraanController
 {
     private $model;
@@ -17,7 +18,7 @@ class TipeKendaraanController
 
         $total = $this->model->getTotal();
         $pagination = paginate($page, $total, $perPage);
-        
+
         $tipe = $this->model->getAllTipe($pagination['limit'], $pagination['offset']);
         include 'views/tipe_kendaraan/tipe_kendaraan_list.php';
     }
@@ -26,8 +27,19 @@ class TipeKendaraanController
     {
         if ($_POST) {
 
+            $allErrors = [];
+
+            $allErrors[] = ValidationHelper::validateName($_POST['nama_tipe'] ?? '', 'Nama tipe', 50);
+
+            $error = ValidationHelper::formatErrors($allErrors);
+
+            if (!empty($error)) {
+                include 'views/tipe_kendaraan/tipe_kendaraan_form.php';
+                return;
+            }
+
             $data = [
-                'nama_tipe' => $_POST['nama_tipe'],
+                'nama_tipe' => ValidationHelper::sanitizeString($_POST['nama_tipe']),
             ];
 
             if ($this->model->createTipe($data)) {
@@ -46,8 +58,20 @@ class TipeKendaraanController
         $id = $_GET['id'];
 
         if ($_POST) {
+            $allErrors = [];
+
+            $allErrors[] = ValidationHelper::validateName($_POST['nama_tipe'] ?? '', 'Nama tipe', 50);
+
+            $error = ValidationHelper::formatErrors($allErrors);
+
+            if (!empty($error)) {
+                $tipe = $this->model->getTipeById($id);
+                include 'views/tipe_kendaraan/tipe_kendaraan_form.php';
+                return;
+            }
+
             $data = [
-                'nama_tipe' => $_POST['nama_tipe'],
+                'nama_tipe' => ValidationHelper::sanitizeString($_POST['nama_tipe']),
             ];
 
             if ($this->model->updateTipe($id, $data)) {
@@ -83,7 +107,7 @@ class TipeKendaraanController
 
         if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
             // Ada keyword search
-            $searchKeyword = $_GET['keyword'];
+            $searchKeyword = ValidationHelper::sanitizeString($_GET['keyword']);
             $tipe = $this->model->searchTipe($searchKeyword);
 
             // Hitung total hasil search
@@ -98,4 +122,3 @@ class TipeKendaraanController
         include 'views/tipe_kendaraan/tipe_kendaraan_list.php';
     }
 }
-?>
