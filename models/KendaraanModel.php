@@ -122,6 +122,8 @@ class KendaraanModel
                   WHERE k.plat_nomor ILIKE :keyword
                      OR k.merk ILIKE :keyword
                      OR k.warna ILIKE :keyword
+                     OR k.status ILIKE :keyword
+                     OR t.nama_tipe ILIKE :keyword
                   ORDER BY k.id_kendaraan DESC
                   LIMIT :limit OFFSET :offset";
 
@@ -137,9 +139,12 @@ class KendaraanModel
     {
         $query = "SELECT COUNT(*) as total
               FROM kendaraan k
+              LEFT JOIN tipe_kendaraan t ON k.id_tipe = t.id_tipe
               WHERE k.plat_nomor ILIKE :keyword
                  OR k.merk ILIKE :keyword
-                 OR k.warna ILIKE :keyword";
+                 OR k.warna ILIKE :keyword
+                 OR k.status ILIKE :keyword
+                 OR t.nama_tipe ILIKE :keyword";
 
         $stmt = $this->conn->prepare($query);
         $kw = "%{$keyword}%";
@@ -160,8 +165,7 @@ class KendaraanModel
         $params = [];
         $conditions = [];
 
-        // SEARCH: Case insensitive dengan ILIKE (PostgreSQL)
-        // Cari di semua kolom yang mungkin ada
+        // SEARCH
         if (!empty($filters['search'])) {
             $conditions[] = "(
                 CAST(id_kendaraan AS TEXT) ILIKE :search OR
@@ -173,7 +177,7 @@ class KendaraanModel
             $params['search'] = $searchTerm;
         }
 
-        // FILTER: Status (gunakan nama kolom 'status' bukan 'status_kendaraan')
+        // FILTER: Status
         if (!empty($filters['status']) && $filters['status'] !== '') {
             $conditions[] = "status = :status";
             $params['status'] = $filters['status'];
@@ -184,12 +188,12 @@ class KendaraanModel
             $query .= " WHERE " . implode(' AND ', $conditions);
         }
 
-        // SORTING - gunakan nama kolom yang sesuai dengan function
+        // SORTING
         $allowedSort = [
             'id_kendaraan',
             'plat_nomor',
             'merk',
-            'status'  // Bukan 'status_kendaraan'
+            'status'
         ];
 
         $sortBy = !empty($filters['sort']) && in_array($filters['sort'], $allowedSort)
@@ -237,7 +241,6 @@ class KendaraanModel
 
     public function getTotalKendaraanTersedia($filters = [])
     {
-        // ✅ Gunakan subquery (sama seperti getKendaraanTersedia)
         $query = "SELECT COUNT(*) as total FROM (
                     SELECT * FROM daftar_kendaraan_tersedia()
                   ) AS hasil";
@@ -257,7 +260,6 @@ class KendaraanModel
             $params['search'] = $searchTerm;
         }
 
-        // FILTER: Status (gunakan 'status' bukan 'status_kendaraan')
         if (!empty($filters['status']) && $filters['status'] !== '') {
             $conditions[] = "status = :status";
             $params['status'] = $filters['status'];

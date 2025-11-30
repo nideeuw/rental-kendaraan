@@ -89,6 +89,8 @@ class SopirModel
 
         $query = "SELECT id_Sopir, nama_sopir, no_sim, tarif_harian, status_sopir FROM " . $this->table_name . "
                   WHERE nama_sopir LIKE :keyword
+                  OR no_sim LIKE :keyword
+                  OR status_sopir LIKE :keyword
                   ORDER BY nama_sopir ASC
                   LIMIT :limit OFFSET :offset";
 
@@ -105,7 +107,9 @@ class SopirModel
 {
     $query = "SELECT COUNT(*) as total
               FROM " . $this->table_name . "
-              WHERE nama_sopir LIKE :keyword";
+              WHERE nama_sopir LIKE :keyword
+              OR no_sim LIKE :keyword
+              OR status_sopir LIKE :keyword";
 
     $stmt = $this->conn->prepare($query);
     $kw = "%{$keyword}%";
