@@ -5,7 +5,7 @@ include __DIR__ . '/../../includes/header.php';
 $searchKeyword = isset($_GET['search']) ? $_GET['search'] : '';
 $filterStatus = isset($_GET['status']) ? $_GET['status'] : '';
 $filterKondisi = isset($_GET['kondisi']) ? $_GET['kondisi'] : '';
-$sortBy = isset($_GET['sort']) ? $_GET['sort'] : 'id_rental';
+$sortBy = isset($_GET['sort']) ? $_GET['sort'] : 'tanggal_sewa';
 $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
 ?>
 
@@ -47,8 +47,8 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
                 </label>
                 <select name="status" class="form-select auto-submit">
                     <option value="">Semua Status</option>
-                    <option value="Aktif" <?= $filterStatus == 'Aktif' ? 'selected' : '' ?>>Aktif</option>
-                    <option value="Selesai" <?= $filterStatus == 'Selesai' ? 'selected' : '' ?>>Selesai</option>
+                    <option value="Tepat Waktu" <?= $filterStatus == 'Tepat Waktu' ? 'selected' : '' ?>>Tepat Waktu</option>
+                    <option value="Terlambat" <?= $filterStatus == 'Terlambat' ? 'selected' : '' ?>>Terlambat</option>
                 </select>
             </div>
 
@@ -72,10 +72,11 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
                     <span>Urutkan</span>
                 </label>
                 <select name="sort" class="form-select auto-submit">
-                    <option value="id_rental" <?= $sortBy == 'id_rental' ? 'selected' : '' ?>>ID Rental</option>
-                    <option value="nama_pelanggan" <?= $sortBy == 'nama_pelanggan' ? 'selected' : '' ?>>Nama Pelanggan</option>
+                    <option value="tarif_harian" <?= $sortBy == 'tarif_harian' ? 'selected' : '' ?>>Tarif Harian</option>
                     <option value="tanggal_sewa" <?= $sortBy == 'tanggal_sewa' ? 'selected' : '' ?>>Tanggal Sewa</option>
+                    <option value="tanggal_kembali" <?= $sortBy == 'tanggal_kembali' ? 'selected' : '' ?>>Tanggal Kembali</option>
                     <option value="total_biaya" <?= $sortBy == 'total_biaya' ? 'selected' : '' ?>>Total Biaya</option>
+                    <option value="tanggal_pengembalian" <?= $sortBy == 'tanggal_pengembalian' ? 'selected' : '' ?>>Tanggal Pengembalian</option>
                     <option value="denda" <?= $sortBy == 'denda' ? 'selected' : '' ?>>Denda</option>
                 </select>
             </div>
@@ -171,7 +172,13 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
                             <td>
                                 <?php
                                 $status = $row['status_pengembalian'] ?? '-';
-                                $statusClass = ($status == 'Sudah Kembali' || $status == 'Selesai') ? 'success' : 'secondary';
+                                if ($status == 'Tepat Waktu') {
+                                    $statusClass = 'success';
+                                } elseif ($status == 'Terlambat') {
+                                    $statusClass = 'danger';
+                                } else {
+                                    $statusClass = 'secondary';
+                                }
                                 ?>
                                 <span class="badge badge-<?= $statusClass; ?>"><?= htmlspecialchars($status); ?></span>
                             </td>
@@ -184,23 +191,23 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
 
     <!-- Pagination -->
     <?php
-        // Buat base URL dengan semua filter params
-        $paginationParams = [
-            'search' => $searchKeyword,
-            'status' => $filterStatus,
-            'kondisi' => $filterKondisi,
-            'sort' => $sortBy,
-            'order' => $sortOrder
-        ];
+    // Buat base URL dengan semua filter params
+    $paginationParams = [
+        'search' => $searchKeyword,
+        'status' => $filterStatus,
+        'kondisi' => $filterKondisi,
+        'sort' => $sortBy,
+        'order' => $sortOrder
+    ];
 
-        // Hapus params kosong
-        $paginationParams = array_filter($paginationParams);
+    // Hapus params kosong
+    $paginationParams = array_filter($paginationParams);
 
-        // Buat query string
-        $queryString = http_build_query($paginationParams);
-        $url = 'index.php?action=laporan_transaksi' . ($queryString ? '&' . $queryString : '');
+    // Buat query string
+    $queryString = http_build_query($paginationParams);
+    $url = 'index.php?action=laporan_transaksi' . ($queryString ? '&' . $queryString : '');
 
-        showPagination($pagination, $url);
+    showPagination($pagination, $url);
     ?>
 
 </div>

@@ -20,7 +20,7 @@ class LaporanController
             'search' => isset($_GET['search']) ? trim($_GET['search']) : '',
             'status' => isset($_GET['status']) ? $_GET['status'] : '',
             'kondisi' => isset($_GET['kondisi']) ? $_GET['kondisi'] : '',
-            'sort' => isset($_GET['sort']) ? $_GET['sort'] : 'id_rental',
+            'sort' => isset($_GET['sort']) ? $_GET['sort'] : 'tanggal_sewa',
             'order' => isset($_GET['order']) ? $_GET['order'] : 'DESC'
         ];
 

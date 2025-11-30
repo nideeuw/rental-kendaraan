@@ -15,9 +15,7 @@ class LaporanModel
         $params = [];
         $conditions = [];
 
-        // SEARCH: Case insensitive dengan ILIKE (PostgreSQL) atau LOWER+LIKE
         if (!empty($filters['search'])) {
-            // Untuk PostgreSQL gunakan ILIKE, untuk MySQL gunakan LOWER
             $conditions[] = "(
                 nama_pelanggan ILIKE :search OR 
                 nama_sopir ILIKE :search OR 
@@ -51,12 +49,14 @@ class LaporanModel
             'id_rental',
             'nama_pelanggan',
             'nama_sopir',
-            'tanggal_sewa',
-            'total_biaya',
-            'denda',
-            'tarif_harian',
             'plat_nomor',
-            'merk'
+            'merk',
+            'tarif_harian',
+            'tanggal_sewa',
+            'tanggal_kembali',
+            'total_biaya',
+            'tanggal_pengembalian',
+            'denda',
         ];
 
         $sortBy = !empty($filters['sort']) && in_array($filters['sort'], $allowedSort)
@@ -88,7 +88,7 @@ class LaporanModel
         $params = [];
         $conditions = [];
 
-        // SEARCH - SAMA SEPERTI DI getLaporanTransaksi
+        // SEARCH
         if (!empty($filters['search'])) {
             $conditions[] = "(
                 nama_pelanggan ILIKE :search OR 
@@ -142,7 +142,7 @@ class LaporanModel
         $params = [];
         $conditions = [];
 
-        // FILTER: Tahun tertentu (jika ada)
+        // FILTER: Tahun tertentu
         if (!empty($filters['tahun']) && $filters['tahun'] !== '') {
             $conditions[] = "tahun = :tahun";
             $params['tahun'] = $filters['tahun'];
