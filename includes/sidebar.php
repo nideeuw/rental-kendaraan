@@ -95,15 +95,15 @@ $listMenu = [
             ]
         ]
     ],
-    [
-        'section' => 'Demo',
-        'items' => [
-            [
-                'url' => 'index.php?action=demo_transaction',
-                'label' => 'Demo Transaction Management'
-            ]
-        ]
-    ]
+    // [
+    //     'section' => 'Demo',
+    //     'items' => [
+    //         [
+    //             'url' => 'index.php?action=demo_transaction',
+    //             'label' => 'Demo Transaction Management'
+    //         ]
+    //     ]
+    // ]
 ];
 ?>
 
