@@ -92,7 +92,7 @@ class PengembalianController
 
             if (!empty($error)) {
                 $pengembalian = $this->model->getPengembalianById($id);
-                $rental_list = $this->model->getAllRental();
+                $rental_list = $this->model->getRentalForEdit($pengembalian['id_rental']);
                 include 'views/pengembalian/pengembalian_form.php';
                 return;
             }
@@ -113,7 +113,7 @@ class PengembalianController
         }
 
         $pengembalian = $this->model->getPengembalianById($id);
-        $rental_list = $this->model->getAllRental();
+        $rental_list = $this->model->getRentalForEdit($pengembalian['id_rental']);
         include 'views/pengembalian/pengembalian_form.php';
     }
 

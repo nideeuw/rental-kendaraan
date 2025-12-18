@@ -61,6 +61,33 @@ class PengembalianModel
         return $stmt;
     }
 
+    public function getRentalForEdit($id_rental)
+    {
+        $query = "SELECT 
+                r.id_rental,
+                r.tanggal_sewa,
+                r.tanggal_kembali,
+                r.total_biaya,
+                r.status_rental,
+                k.plat_nomor,
+                k.tarif_harian,
+                s.nama_sopir,
+                p.nama_pelanggan    
+              FROM rental r
+              LEFT JOIN kendaraan k ON r.id_kendaraan = k.id_kendaraan
+              LEFT JOIN sopir s ON r.id_sopir = s.id_sopir
+              LEFT JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan
+              WHERE r.status_rental = 'Aktif'
+                 OR r.id_rental = :id_rental
+              ORDER BY r.id_rental DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_rental', $id_rental, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt;
+    }
+
+
     // CREATE DATA
     public function createPengembalian($data)
     {
