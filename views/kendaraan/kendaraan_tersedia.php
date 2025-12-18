@@ -34,19 +34,6 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
                     value="<?= htmlspecialchars($searchKeyword) ?>">
             </div>
 
-            <!-- Filter Status -->
-            <!-- <div class="filter-col">
-                <label class="filter-label">
-                    <span class="label-icon">📊</span>
-                    <span>Status</span>
-                </label>
-                <select name="status" class="form-select auto-submit">
-                    <option value="">Semua Status</option>
-                    <option value="Tersedia" <?= $filterStatus == 'Tersedia' ? 'selected' : '' ?>>Tersedia</option>
-                    <option value="Disewa" <?= $filterStatus == 'Disewa' ? 'selected' : '' ?>>Disewa</option>
-                </select>
-            </div> -->
-
             <!-- Sort By -->
             <div class="filter-col">
                 <label class="filter-label">
