@@ -35,7 +35,7 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
             </div>
 
             <!-- Filter Status -->
-            <div class="filter-col">
+            <!-- <div class="filter-col">
                 <label class="filter-label">
                     <span class="label-icon">📊</span>
                     <span>Status</span>
@@ -45,7 +45,7 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
                     <option value="Tersedia" <?= $filterStatus == 'Tersedia' ? 'selected' : '' ?>>Tersedia</option>
                     <option value="Disewa" <?= $filterStatus == 'Disewa' ? 'selected' : '' ?>>Disewa</option>
                 </select>
-            </div>
+            </div> -->
 
             <!-- Sort By -->
             <div class="filter-col">
@@ -57,7 +57,6 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
                     <option value="id_kendaraan" <?= $sortBy == 'id_kendaraan' ? 'selected' : '' ?>>ID Kendaraan</option>
                     <option value="plat_nomor" <?= $sortBy == 'plat_nomor' ? 'selected' : '' ?>>Plat Nomor</option>
                     <option value="merk" <?= $sortBy == 'merk' ? 'selected' : '' ?>>Merk Kendaraan</option>
-                    <option value="status_kendaraan" <?= $sortBy == 'status_kendaraan' ? 'selected' : '' ?>>Status</option>
                 </select>
             </div>
 
@@ -76,15 +75,12 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
     </div>
 
     <!-- Active Filters Info -->
-    <?php if ($searchKeyword || $filterStatus): ?>
+    <?php if ($searchKeyword): ?>
         <div class="filter-info">
             <div class="filter-info-text">
                 <strong>Filter Aktif:</strong>
                 <?php if ($searchKeyword): ?>
                     <span class="info-tag">🔍 "<?= htmlspecialchars($searchKeyword) ?>"</span>
-                <?php endif; ?>
-                <?php if ($filterStatus): ?>
-                    <span class="info-tag">📊 <?= htmlspecialchars($filterStatus) ?></span>
                 <?php endif; ?>
         </div>
     <?php endif; ?>
@@ -138,7 +134,6 @@ $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'DESC';
     $queryParams = http_build_query([
         'action' => 'kendaraan_tersedia',
         'search' => $searchKeyword,
-        'status' => $filterStatus,
         'sort' => $sortBy,
         'order' => $sortOrder
     ]);

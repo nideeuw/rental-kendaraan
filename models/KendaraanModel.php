@@ -170,18 +170,11 @@ class KendaraanModel
             $conditions[] = "(
                 CAST(id_kendaraan AS TEXT) ILIKE :search OR
                 plat_nomor ILIKE :search OR 
-                merk ILIKE :search OR
-                status ILIKE :search
-            )";
+                merk ILIKE :search)";
             $searchTerm = '%' . $filters['search'] . '%';
             $params['search'] = $searchTerm;
         }
 
-        // FILTER: Status
-        if (!empty($filters['status']) && $filters['status'] !== '') {
-            $conditions[] = "status = :status";
-            $params['status'] = $filters['status'];
-        }
 
         // WHERE clause
         if (!empty($conditions)) {
@@ -192,8 +185,7 @@ class KendaraanModel
         $allowedSort = [
             'id_kendaraan',
             'plat_nomor',
-            'merk',
-            'status'
+            'merk'
         ];
 
         $sortBy = !empty($filters['sort']) && in_array($filters['sort'], $allowedSort)
@@ -253,16 +245,10 @@ class KendaraanModel
             $conditions[] = "(
                 CAST(id_kendaraan AS TEXT) ILIKE :search OR
                 plat_nomor ILIKE :search OR 
-                merk ILIKE :search OR
-                status ILIKE :search
+                merk ILIKE :search
             )";
             $searchTerm = '%' . $filters['search'] . '%';
             $params['search'] = $searchTerm;
-        }
-
-        if (!empty($filters['status']) && $filters['status'] !== '') {
-            $conditions[] = "status = :status";
-            $params['status'] = $filters['status'];
         }
 
         // WHERE clause
