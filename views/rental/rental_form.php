@@ -37,8 +37,8 @@ include __DIR__ . '/../../includes/header.php';
             <div class="form-group">
                 <label class="form-label">Status Rental</label>
                 <select name="status_rental" id="status_rental" class="form-input" required>
-                    <option value="Belum Kembali" <?= isset($rental) && $rental['status_rental'] == 'Belum Kembali' ? 'selected' : '' ?>>Aktif</option>
-                    <option value="Sudah Kembali" <?= isset($rental) && $rental['status_rental'] == 'Sudah Kembali' ? 'selected' : '' ?>>Selesai</option>
+                    <option value="Aktif" <?= isset($rental) && $rental['status_rental'] == 'Aktif' ? 'selected' : '' ?>>Aktif</option>
+                    <option value="Selesai" <?= isset($rental) && $rental['status_rental'] == 'Selesai' ? 'selected' : '' ?>>Selesai</option>
                 </select>
             </div>
 

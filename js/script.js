@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // Auto hide alert setelah 5 detik
-    var alerts = document.querySelectorAll('.alert');
-    alerts.forEach(function (alert) {
-        setTimeout(function () {
-            alert.style.display = 'none';
-        }, 5000);
-    });
+    // var alerts = document.querySelectorAll('.alert');
+    // alerts.forEach(function (alert) {
+    //     setTimeout(function () {
+    //         alert.style.display = 'none';
+    //     }, 5000);
+    // });
 
     // Highlight menu aktif
     var currentUrl = window.location.href;

@@ -114,7 +114,7 @@ class RentalController
             }
 
             $allErrors[] = ValidationHelper::validatePositiveNumber($_POST['total_biaya'] ?? '', 'Total biaya', 0);
-            $allErrors[] = ValidationHelper::validateEnum($_POST['status_rental'] ?? '', ['aktif', 'selesai', 'dibatalkan'], 'Status rental');
+            $allErrors[] = ValidationHelper::validateEnum($_POST['status_rental'] ?? '', ['Aktif', 'Selesai'], 'Status rental');
             $allErrors[] = ValidationHelper::validateId($_POST['id_kendaraan'] ?? '', 'Kendaraan');
             $allErrors[] = ValidationHelper::validateId($_POST['id_pelanggan'] ?? '', 'Pelanggan');
 

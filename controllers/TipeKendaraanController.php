@@ -79,7 +79,7 @@ class TipeKendaraanController
             ];
 
             if ($this->model->updateTipe($id, $data)) {
-                header("Location: index.php?action=tipe_kendaraan_list&message=updated");
+                header("Location: index.php?action=tipe_list&message=updated"); // ← UBAH INI
                 exit();
             } else {
                 $error = "Gagal mengupdate tipe kendaraan";
@@ -95,9 +95,9 @@ class TipeKendaraanController
         $id = $_GET['id'];
 
         if ($this->model->deleteTipe($id)) {
-            header("Location: index.php?action=tipe_kendaraan_list&message=deleted");
+            header("Location: index.php?action=tipe_list&message=deleted"); // ← UBAH INI
         } else {
-            header("Location: index.php?action=tipe_kendaraan_list&message=delete_error");
+            header("Location: index.php?action=tipe_list&message=delete_error"); // ← UBAH INI
         }
         exit();
     }
@@ -119,7 +119,7 @@ class TipeKendaraanController
             $pagination = paginate($page, $total, $perPage);
         } else {
             // Tidak ada keyword, redirect ke list
-            header("Location: index.php?action=tipe_kendaraan_list");
+            header("Location: index.php?action=tipe_list"); // ← UBAH INI JUGA
             exit();
         }
 

@@ -22,13 +22,6 @@ include __DIR__ . '/../../includes/header.php';
                     value="<?php echo isset($tipe) ? htmlspecialchars($tipe['nama_tipe']) : ''; ?>"
                     required>
             </div>
-
-            <div class="form-group">
-                <label for="keterangan" class="form-label">Keterangan</label>
-                <input type="text" id="keterangan" name="keterangan" class="form-input"
-                    placeholder="Opsional"
-                    value="<?php echo htmlspecialchars($tipe['nama_tipe'] ?? ''); ?>">
-            </div>
         </div>
 
         <div class="form-actions">
