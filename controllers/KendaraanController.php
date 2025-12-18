@@ -87,10 +87,12 @@ class KendaraanController
             ];
 
             if ($this->model->createKendaraan($data)) {
-                header("Location: index.php?action=kendaraan_list&message=created");
+                $_SESSION['notif'] = [
+                    'type' => 'success',
+                    'message' => 'Data kendaraan berhasil ditambahkan.'
+                ];
+                header("Location: index.php?action=kendaraan_list");
                 exit();
-            } else {
-                $error = "Gagal menambah data kendaraan";
             }
         }
 
@@ -143,10 +145,12 @@ class KendaraanController
             ];
 
             if ($this->model->updateKendaraan($id, $data)) {
-                header("Location: index.php?action=kendaraan_list&message=updated");
+                $_SESSION['notif'] = [
+                    'type' => 'success',
+                    'message' => 'Data kendaraan berhasil diperbarui.'
+                ];
+                header("Location: index.php?action=kendaraan_list");
                 exit();
-            } else {
-                $error = "Gagal mengupdate data kendaraan";
             }
         }
 
@@ -160,10 +164,18 @@ class KendaraanController
         $id = $_GET['id'];
 
         if ($this->model->deleteKendaraan($id)) {
-            header("Location: index.php?action=kendaraan_list&message=deleted");
+            $_SESSION['notif'] = [
+                'type' => 'success',
+                'message' => 'Data kendaraan berhasil dihapus.'
+            ];
         } else {
-            header("Location: index.php?action=kendaraan_list&message=delete_error");
+            $_SESSION['notif'] = [
+                'type' => 'error',
+                'message' => 'Gagal menghapus data kendaraan.'
+            ];
         }
+
+        header("Location: index.php?action=kendaraan_list");
         exit();
     }
 
@@ -226,13 +238,13 @@ class KendaraanController
         $allErrors = [];
         $allErrors[] = ValidationHelper::validateId($_GET['id'] ?? '', 'ID Kendaraan');
         $allErrors[] = ValidationHelper::validateEnum(
-            $_GET['status'] ?? '', 
-            ['Tersedia', 'Disewa', 'Perawatan'], 
+            $_GET['status'] ?? '',
+            ['Tersedia', 'Disewa', 'Perawatan'],
             'Status'
         );
 
         $error = ValidationHelper::formatErrors($allErrors);
-        
+
         if (!empty($error)) {
             $_SESSION['notif'] = [
                 "type" => "error",
